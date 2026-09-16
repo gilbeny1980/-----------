@@ -23,15 +23,24 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <span className="text-xl">⚡</span>
               <span className="font-bold text-lg">מחלקת חשמל - גלעם</span>
             </Link>
-            <nav className="flex gap-4 text-sm font-medium">
+            <nav className="flex flex-wrap gap-4 text-sm font-medium">
               <Link href="/" className="hover:text-amber-300 transition-colors">
-                לוח משימות
+                מסך תצוגה
+              </Link>
+              <Link href="/tasks" className="hover:text-amber-300 transition-colors">
+                כל המשימות
               </Link>
               <Link
                 href="/tasks/new"
                 className="hover:text-amber-300 transition-colors"
               >
                 משימה חדשה
+              </Link>
+              <Link
+                href="/projects"
+                className="hover:text-amber-300 transition-colors"
+              >
+                פרויקטים
               </Link>
               <Link
                 href="/electricians"
@@ -42,10 +51,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
             </nav>
           </div>
         </header>
-        <main className="flex-1 mx-auto w-full max-w-5xl px-4 py-6">
-          {children}
-        </main>
-        <footer className="text-center text-xs text-slate-400 py-4">
+        <main className="flex-1 w-full flex flex-col">{children}</main>
+        <footer className="bg-slate-900 text-center text-xs text-slate-400 py-2">
           מערכת ניהול משימות פנימית - מחלקת חשמל, גלעם
         </footer>
       </body>

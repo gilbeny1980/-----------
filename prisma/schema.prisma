@@ -33,6 +33,16 @@ model Electrician {
   tasks Task[]
 }
 
+model Project {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  tasks Task[]
+}
+
 model Task {
   id            String       @id @default(cuid())
   title         String
@@ -50,6 +60,23 @@ model Task {
   electricianId String?
   electrician   Electrician? @relation(fields: [electricianId], references: [id])
 
+  projectId String?
+  project   Project? @relation(fields: [projectId], references: [id])
+
+  activityLogs ActivityLog[]
+
   @@index([status])
   @@index([electricianId])
+  @@index([projectId])
+}
+
+model ActivityLog {
+  id        String   @id @default(cuid())
+  message   String
+  createdAt DateTime @default(now())
+
+  taskId String?
+  task   Task?   @relation(fields: [taskId], references: [id], onDelete: SetNull)
+
+  @@index([createdAt])
 }

@@ -4,13 +4,19 @@ import { PRIORITY_LABELS } from "@/lib/labels";
 import { TaskPriority } from "@/generated/prisma/enums";
 
 export default async function NewTaskPage() {
-  const electricians = await prisma.electrician.findMany({
-    where: { active: true },
-    orderBy: { name: "asc" },
-  });
+  const [electricians, projects] = await Promise.all([
+    prisma.electrician.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.project.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+    }),
+  ]);
 
   return (
-    <div className="mx-auto max-w-2xl">
+    <div className="mx-auto max-w-2xl w-full px-4 py-6">
       <h1 className="mb-4 text-xl font-bold">משימה / קריאת תקלה חדשה</h1>
       <form
         action={createTask}
@@ -73,10 +79,21 @@ export default async function NewTaskPage() {
               ))}
             </select>
           </Field>
-          <Field label="תאריך יעד">
-            <input type="date" name="dueDate" className="input" />
+          <Field label="פרויקט">
+            <select name="projectId" className="input" defaultValue="">
+              <option value="">ללא פרויקט</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
+                </option>
+              ))}
+            </select>
           </Field>
         </div>
+
+        <Field label="תאריך יעד">
+          <input type="date" name="dueDate" className="input" />
+        </Field>
 
         <button
           type="submit"

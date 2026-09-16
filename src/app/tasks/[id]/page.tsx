@@ -15,9 +15,13 @@ export default async function TaskDetailPage({
 }) {
   const { id } = await params;
 
-  const [task, electricians] = await Promise.all([
+  const [task, electricians, projects] = await Promise.all([
     prisma.task.findUnique({ where: { id }, include: { electrician: true } }),
     prisma.electrician.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.project.findMany({
       where: { active: true },
       orderBy: { name: "asc" },
     }),
@@ -31,7 +35,7 @@ export default async function TaskDetailPage({
   const deleteTaskWithId = deleteTask.bind(null, task.id);
 
   return (
-    <div className="mx-auto max-w-2xl space-y-4">
+    <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-4">
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">עריכת משימה</h1>
         <div className="text-xs text-slate-400">
@@ -101,6 +105,21 @@ export default async function TaskDetailPage({
             </select>
           </Field>
         </div>
+
+        <Field label="פרויקט">
+          <select
+            name="projectId"
+            className="input"
+            defaultValue={task.projectId ?? ""}
+          >
+            <option value="">ללא פרויקט</option>
+            {projects.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </Field>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="שם הפונה">
