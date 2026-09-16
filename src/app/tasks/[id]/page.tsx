@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { addTaskComment, updateTask, deleteTask } from "@/app/actions";
 import { CommentForm } from "@/app/CommentForm";
+import { isViewer } from "@/lib/role";
 import {
   PRIORITY_LABELS,
   STATUS_LABELS,
@@ -18,7 +19,7 @@ export default async function TaskDetailPage({
 }) {
   const { id } = await params;
 
-  const [task, electricians, projects] = await Promise.all([
+  const [task, electricians, projects, viewer] = await Promise.all([
     prisma.task.findUnique({
       where: { id },
       include: {
@@ -34,6 +35,7 @@ export default async function TaskDetailPage({
       where: { active: true },
       orderBy: { name: "asc" },
     }),
+    isViewer(),
   ]);
 
   if (!task) {
@@ -63,7 +65,13 @@ export default async function TaskDetailPage({
         className="space-y-4 rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
       >
         <Field label="כותרת *">
-          <input name="title" required className="input" defaultValue={task.title} />
+          <input
+            name="title"
+            required
+            className="input"
+            defaultValue={task.title}
+            disabled={viewer}
+          />
         </Field>
 
         <Field label="תיאור">
@@ -72,6 +80,7 @@ export default async function TaskDetailPage({
             rows={4}
             className="input"
             defaultValue={task.description ?? ""}
+            disabled={viewer}
           />
         </Field>
 
@@ -81,10 +90,11 @@ export default async function TaskDetailPage({
               name="location"
               className="input"
               defaultValue={task.location ?? ""}
+              disabled={viewer}
             />
           </Field>
           <Field label="עדיפות">
-            <select name="priority" className="input" defaultValue={task.priority}>
+            <select name="priority" className="input" defaultValue={task.priority} disabled={viewer}>
               {(Object.keys(PRIORITY_LABELS) as TaskPriority[]).map((p) => (
                 <option key={p} value={p}>
                   {PRIORITY_LABELS[p]}
@@ -96,7 +106,7 @@ export default async function TaskDetailPage({
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="סטטוס">
-            <select name="status" className="input" defaultValue={task.status}>
+            <select name="status" className="input" defaultValue={task.status} disabled={viewer}>
               {statusOptions.map((s) => (
                 <option key={s} value={s}>
                   {STATUS_LABELS[s]}
@@ -114,6 +124,7 @@ export default async function TaskDetailPage({
               name="electricianId"
               className="input"
               defaultValue={task.electricianId ?? ""}
+              disabled={viewer}
             >
               <option value="">לא משויך</option>
               {electricians.map((e) => (
@@ -130,6 +141,7 @@ export default async function TaskDetailPage({
             name="projectId"
             className="input"
             defaultValue={task.projectId ?? ""}
+            disabled={viewer}
           >
             <option value="">ללא פרויקט</option>
             {projects.map((p) => (
@@ -146,6 +158,7 @@ export default async function TaskDetailPage({
               name="reporterName"
               className="input"
               defaultValue={task.reporterName ?? ""}
+              disabled={viewer}
             />
           </Field>
           <Field label="טלפון הפונה">
@@ -154,6 +167,7 @@ export default async function TaskDetailPage({
               className="input"
               dir="ltr"
               defaultValue={task.reporterPhone ?? ""}
+              disabled={viewer}
             />
           </Field>
         </div>
@@ -166,20 +180,23 @@ export default async function TaskDetailPage({
             defaultValue={
               task.dueDate ? task.dueDate.toISOString().slice(0, 10) : ""
             }
+            disabled={viewer}
           />
         </Field>
 
-        <button
-          type="submit"
-          className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
-        >
-          שמירת שינויים
-        </button>
+        {!viewer && (
+          <button
+            type="submit"
+            className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
+          >
+            שמירת שינויים
+          </button>
+        )}
       </form>
 
       <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="mb-3 font-bold">הערות</h2>
-        <CommentForm action={addCommentWithId} />
+        {!viewer && <CommentForm action={addCommentWithId} />}
         {task.comments.length === 0 ? (
           <p className="text-sm text-slate-400">אין הערות עדיין</p>
         ) : (
@@ -199,14 +216,16 @@ export default async function TaskDetailPage({
         )}
       </div>
 
-      <form action={deleteTaskWithId}>
-        <button
-          type="submit"
-          className="w-full rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
-        >
-          מחיקת משימה
-        </button>
-      </form>
+      {!viewer && (
+        <form action={deleteTaskWithId}>
+          <button
+            type="submit"
+            className="w-full rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
+          >
+            מחיקת משימה
+          </button>
+        </form>
+      )}
     </div>
   );
 }

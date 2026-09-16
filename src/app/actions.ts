@@ -3,13 +3,12 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { logActivity } from "@/lib/activity";
+import { assertNotViewer } from "@/lib/role";
 import {
   ProjectStatus,
   TaskPriority,
   TaskStatus,
 } from "@/generated/prisma/enums";
-import { PROJECT_STATUS_LABELS, STATUS_LABELS } from "@/lib/labels";
 
 function asOrNull(value: FormDataEntryValue | null): string | null {
   const str = (value ?? "").toString().trim();
@@ -35,6 +34,8 @@ function revalidateTaskPaths(taskId?: string) {
 }
 
 export async function createTask(formData: FormData) {
+  await assertNotViewer();
+
   const title = (formData.get("title") ?? "").toString().trim();
   if (!title) {
     throw new Error("כותרת המשימה היא שדה חובה");
@@ -47,7 +48,7 @@ export async function createTask(formData: FormData) {
   const electricianId = asOrNull(formData.get("electricianId"));
   const projectId = asOrNull(formData.get("projectId"));
 
-  const task = await prisma.task.create({
+  await prisma.task.create({
     data: {
       title,
       description: asOrNull(formData.get("description")),
@@ -62,13 +63,13 @@ export async function createTask(formData: FormData) {
     },
   });
 
-  await logActivity(`נפתחה משימה חדשה: "${title}"`, task.id);
-
   revalidateTaskPaths();
   redirect("/");
 }
 
 export async function updateTask(taskId: string, formData: FormData) {
+  await assertNotViewer();
+
   const title = (formData.get("title") ?? "").toString().trim();
   if (!title) {
     throw new Error("כותרת המשימה היא שדה חובה");
@@ -86,7 +87,6 @@ export async function updateTask(taskId: string, formData: FormData) {
 
   const existing = await prisma.task.findUniqueOrThrow({
     where: { id: taskId },
-    include: { electrician: true },
   });
 
   await prisma.task.update({
@@ -111,36 +111,13 @@ export async function updateTask(taskId: string, formData: FormData) {
     },
   });
 
-  if (status !== existing.status) {
-    await logActivity(
-      `סטטוס המשימה "${title}" עודכן ל${STATUS_LABELS[status]}`,
-      taskId,
-    );
-  }
-
-  if (electricianId !== existing.electricianId) {
-    if (electricianId) {
-      const electrician = await prisma.electrician.findUnique({
-        where: { id: electricianId },
-      });
-      await logActivity(
-        `המשימה "${title}" שויכה ל${electrician?.name ?? "חשמלאי"}`,
-        taskId,
-      );
-    } else {
-      await logActivity(`שיוך החשמלאי למשימה "${title}" בוטל`, taskId);
-    }
-  }
-
-  if (priority !== existing.priority && priority === "URGENT") {
-    await logActivity(`המשימה "${title}" סומנה כדחופה`, taskId);
-  }
-
   revalidateTaskPaths(taskId);
   redirect(`/tasks/${taskId}`);
 }
 
 export async function addTaskComment(taskId: string, formData: FormData) {
+  await assertNotViewer();
+
   const body = (formData.get("body") ?? "").toString().trim();
   if (!body) return;
 
@@ -149,16 +126,24 @@ export async function addTaskComment(taskId: string, formData: FormData) {
 }
 
 export async function deleteTask(taskId: string) {
-  const task = await prisma.task.findUnique({ where: { id: taskId } });
-  if (task) {
-    await logActivity(`המשימה "${task.title}" נמחקה`);
-  }
+  await assertNotViewer();
+
   await prisma.task.delete({ where: { id: taskId } });
   revalidateTaskPaths();
   redirect("/tasks");
 }
 
+function revalidateElectricianPaths(electricianId?: string) {
+  revalidatePath("/electricians");
+  revalidatePath("/tasks");
+  revalidatePath("/tasks/new");
+  revalidatePath("/");
+  if (electricianId) revalidatePath(`/electricians/${electricianId}`);
+}
+
 export async function createElectrician(formData: FormData) {
+  await assertNotViewer();
+
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
     throw new Error("שם החשמלאי הוא שדה חובה");
@@ -177,18 +162,12 @@ export async function createElectrician(formData: FormData) {
   revalidateElectricianPaths();
 }
 
-function revalidateElectricianPaths(electricianId?: string) {
-  revalidatePath("/electricians");
-  revalidatePath("/tasks");
-  revalidatePath("/tasks/new");
-  revalidatePath("/");
-  if (electricianId) revalidatePath(`/electricians/${electricianId}`);
-}
-
 export async function updateElectrician(
   electricianId: string,
   formData: FormData,
 ) {
+  await assertNotViewer();
+
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
     throw new Error("שם החשמלאי הוא שדה חובה");
@@ -213,6 +192,8 @@ export async function toggleElectricianActive(
   electricianId: string,
   active: boolean,
 ) {
+  await assertNotViewer();
+
   await prisma.electrician.update({
     where: { id: electricianId },
     data: { active },
@@ -221,6 +202,8 @@ export async function toggleElectricianActive(
 }
 
 export async function deleteElectrician(electricianId: string) {
+  await assertNotViewer();
+
   await prisma.task.updateMany({
     where: { electricianId },
     data: { electricianId: null },
@@ -233,6 +216,8 @@ export async function deleteElectrician(electricianId: string) {
 }
 
 export async function createProject(formData: FormData) {
+  await assertNotViewer();
+
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
     throw new Error("שם הפרויקט הוא שדה חובה");
@@ -244,8 +229,6 @@ export async function createProject(formData: FormData) {
       description: asOrNull(formData.get("description")),
     },
   });
-
-  await logActivity(`נפתח פרויקט חדש: "${name}"`);
 
   revalidatePath("/projects");
   revalidatePath("/tasks");
@@ -261,6 +244,8 @@ function revalidateProjectPaths(projectId?: string) {
 }
 
 export async function updateProject(projectId: string, formData: FormData) {
+  await assertNotViewer();
+
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
     throw new Error("שם הפרויקט הוא שדה חובה");
@@ -268,10 +253,6 @@ export async function updateProject(projectId: string, formData: FormData) {
 
   const statusRaw = (formData.get("status") ?? "TODO").toString();
   const status = isProjectStatus(statusRaw) ? statusRaw : "TODO";
-
-  const existing = await prisma.project.findUniqueOrThrow({
-    where: { id: projectId },
-  });
 
   await prisma.project.update({
     where: { id: projectId },
@@ -282,17 +263,13 @@ export async function updateProject(projectId: string, formData: FormData) {
     },
   });
 
-  if (status !== existing.status) {
-    await logActivity(
-      `סטטוס הפרויקט "${name}" עודכן ל${PROJECT_STATUS_LABELS[status]}`,
-    );
-  }
-
   revalidateProjectPaths(projectId);
   redirect(`/projects/${projectId}`);
 }
 
 export async function addProjectComment(projectId: string, formData: FormData) {
+  await assertNotViewer();
+
   const body = (formData.get("body") ?? "").toString().trim();
   if (!body) return;
 
@@ -301,6 +278,8 @@ export async function addProjectComment(projectId: string, formData: FormData) {
 }
 
 export async function toggleProjectActive(projectId: string, active: boolean) {
+  await assertNotViewer();
+
   await prisma.project.update({
     where: { id: projectId },
     data: { active },
@@ -309,6 +288,8 @@ export async function toggleProjectActive(projectId: string, active: boolean) {
 }
 
 export async function deleteProject(projectId: string) {
+  await assertNotViewer();
+
   await prisma.task.updateMany({
     where: { projectId },
     data: { projectId: null },
@@ -318,4 +299,23 @@ export async function deleteProject(projectId: string) {
   revalidatePath("/tasks");
   revalidatePath("/");
   redirect("/projects");
+}
+
+export async function createAnnouncement(formData: FormData) {
+  await assertNotViewer();
+
+  const message = (formData.get("message") ?? "").toString().trim();
+  if (!message) return;
+
+  await prisma.announcement.create({ data: { message } });
+  revalidatePath("/announcements");
+  revalidatePath("/");
+}
+
+export async function deleteAnnouncement(announcementId: string) {
+  await assertNotViewer();
+
+  await prisma.announcement.delete({ where: { id: announcementId } });
+  revalidatePath("/announcements");
+  revalidatePath("/");
 }

@@ -1,26 +1,30 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteProject, toggleProjectActive } from "@/app/actions";
+import { isViewer } from "@/lib/role";
 import { PROJECT_STATUS_BADGE_CLASSES, PROJECT_STATUS_LABELS } from "@/lib/labels";
 import { AddProjectForm } from "./AddProjectForm";
 
 export default async function ProjectsPage() {
-  const projects = await prisma.project.findMany({
-    orderBy: [{ active: "desc" }, { name: "asc" }],
-    include: {
-      _count: {
-        select: {
-          tasks: { where: { status: { notIn: ["DONE", "CANCELLED"] } } },
+  const [projects, viewer] = await Promise.all([
+    prisma.project.findMany({
+      orderBy: [{ active: "desc" }, { name: "asc" }],
+      include: {
+        _count: {
+          select: {
+            tasks: { where: { status: { notIn: ["DONE", "CANCELLED"] } } },
+          },
         },
       },
-    },
-  });
+    }),
+    isViewer(),
+  ]);
 
   return (
     <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-6">
       <h1 className="text-xl font-bold">פרויקטים</h1>
 
-      <AddProjectForm />
+      {!viewer && <AddProjectForm />}
 
       <div className="rounded-lg border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
         {projects.length === 0 ? (
@@ -49,30 +53,32 @@ export default async function ProjectsPage() {
                   {p.description ?? "—"} · {p._count.tasks} משימות פתוחות
                 </div>
               </div>
-              <div className="flex gap-2">
-                <Link
-                  href={`/projects/${p.id}`}
-                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
-                >
-                  עריכה
-                </Link>
-                <form action={toggleProjectActive.bind(null, p.id, !p.active)}>
-                  <button
-                    type="submit"
+              {!viewer && (
+                <div className="flex gap-2">
+                  <Link
+                    href={`/projects/${p.id}`}
                     className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
                   >
-                    {p.active ? "השבתה" : "הפעלה"}
-                  </button>
-                </form>
-                <form action={deleteProject.bind(null, p.id)}>
-                  <button
-                    type="submit"
-                    className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
-                  >
-                    מחיקה
-                  </button>
-                </form>
-              </div>
+                    עריכה
+                  </Link>
+                  <form action={toggleProjectActive.bind(null, p.id, !p.active)}>
+                    <button
+                      type="submit"
+                      className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                    >
+                      {p.active ? "השבתה" : "הפעלה"}
+                    </button>
+                  </form>
+                  <form action={deleteProject.bind(null, p.id)}>
+                    <button
+                      type="submit"
+                      className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                    >
+                      מחיקה
+                    </button>
+                  </form>
+                </div>
+              )}
             </div>
           ))
         )}

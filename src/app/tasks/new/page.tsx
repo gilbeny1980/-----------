@@ -1,9 +1,15 @@
+import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { createTask } from "@/app/actions";
+import { isViewer } from "@/lib/role";
 import { PRIORITY_LABELS } from "@/lib/labels";
 import { TaskPriority } from "@/generated/prisma/enums";
 
 export default async function NewTaskPage() {
+  if (await isViewer()) {
+    redirect("/tasks");
+  }
+
   const [electricians, projects] = await Promise.all([
     prisma.electrician.findMany({
       where: { active: true },

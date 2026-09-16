@@ -20,8 +20,14 @@ function isBirthdayToday(birthDate: Date): boolean {
 }
 
 export default async function DisplayPage() {
-  const [urgentTasks, projects, logs, openCount, inProgressCount, electricians] =
-    await Promise.all([
+  const [
+    urgentTasks,
+    projects,
+    announcements,
+    openCount,
+    inProgressCount,
+    electricians,
+  ] = await Promise.all([
       prisma.task.findMany({
         where: {
           priority: "URGENT",
@@ -42,7 +48,7 @@ export default async function DisplayPage() {
         },
         orderBy: { name: "asc" },
       }),
-      prisma.activityLog.findMany({
+      prisma.announcement.findMany({
         orderBy: { createdAt: "desc" },
         take: 15,
       }),
@@ -64,7 +70,7 @@ export default async function DisplayPage() {
     createdAt: now,
   }));
 
-  const feedItems = [...birthdayFeedItems, ...logs]
+  const feedItems = [...birthdayFeedItems, ...announcements]
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 15);
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import Link from "next/link";
+import { isViewer } from "@/lib/role";
 import "./globals.css";
 
 const heebo = Heebo({
@@ -13,7 +14,9 @@ export const metadata: Metadata = {
   description: "מערכת לניהול קריאות ותקלות עבור מחלקת החשמל בגלעם",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
+  const viewer = await isViewer();
+
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
@@ -30,24 +33,34 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/tasks" className="hover:text-amber-300 transition-colors">
                 כל המשימות
               </Link>
-              <Link
-                href="/tasks/new"
-                className="hover:text-amber-300 transition-colors"
-              >
-                משימה חדשה
-              </Link>
-              <Link
-                href="/projects"
-                className="hover:text-amber-300 transition-colors"
-              >
-                פרויקטים
-              </Link>
-              <Link
-                href="/electricians"
-                className="hover:text-amber-300 transition-colors"
-              >
-                חשמלאים
-              </Link>
+              {!viewer && (
+                <>
+                  <Link
+                    href="/tasks/new"
+                    className="hover:text-amber-300 transition-colors"
+                  >
+                    משימה חדשה
+                  </Link>
+                  <Link
+                    href="/projects"
+                    className="hover:text-amber-300 transition-colors"
+                  >
+                    פרויקטים
+                  </Link>
+                  <Link
+                    href="/electricians"
+                    className="hover:text-amber-300 transition-colors"
+                  >
+                    חשמלאים
+                  </Link>
+                  <Link
+                    href="/announcements"
+                    className="hover:text-amber-300 transition-colors"
+                  >
+                    הודעות
+                  </Link>
+                </>
+              )}
             </nav>
           </div>
         </header>
