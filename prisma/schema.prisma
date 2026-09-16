@@ -1,0 +1,55 @@
+// Prisma schema for the Gilam Electrical Department task management system
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+enum TaskStatus {
+  NEW
+  IN_PROGRESS
+  DONE
+  CANCELLED
+}
+
+enum TaskPriority {
+  LOW
+  NORMAL
+  HIGH
+  URGENT
+}
+
+model Electrician {
+  id        String   @id @default(cuid())
+  name      String
+  phone     String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  tasks Task[]
+}
+
+model Task {
+  id            String       @id @default(cuid())
+  title         String
+  description   String?
+  location      String?
+  status        TaskStatus   @default(NEW)
+  priority      TaskPriority @default(NORMAL)
+  reporterName  String?
+  reporterPhone String?
+  dueDate       DateTime?
+  completedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  electricianId String?
+  electrician   Electrician? @relation(fields: [electricianId], references: [id])
+
+  @@index([status])
+  @@index([electricianId])
+}
