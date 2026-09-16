@@ -10,8 +10,8 @@ const heebo = Heebo({
 });
 
 export const metadata: Metadata = {
-  title: "ניהול משימות - מחלקת חשמל גלעם",
-  description: "מערכת לניהול קריאות ותקלות עבור מחלקת החשמל בגלעם",
+  title: "מחלקת חשמל - גלעם",
+  description: "מערכת לניהול פרויקטים ועדכונים עבור מחלקת החשמל בגלעם",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
@@ -30,17 +30,8 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <Link href="/" className="hover:text-amber-300 transition-colors">
                 מסך תצוגה
               </Link>
-              <Link href="/tasks" className="hover:text-amber-300 transition-colors">
-                כל המשימות
-              </Link>
               {!viewer && (
                 <>
-                  <Link
-                    href="/tasks/new"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    משימה חדשה
-                  </Link>
                   <Link
                     href="/projects"
                     className="hover:text-amber-300 transition-colors"

@@ -9,20 +9,6 @@ datasource db {
   provider = "sqlite"
 }
 
-enum TaskStatus {
-  NEW
-  IN_PROGRESS
-  DONE
-  CANCELLED
-}
-
-enum TaskPriority {
-  LOW
-  NORMAL
-  HIGH
-  URGENT
-}
-
 enum ProjectStatus {
   TODO
   IN_PROGRESS
@@ -36,8 +22,6 @@ model Electrician {
   birthDate DateTime?
   active    Boolean   @default(true)
   createdAt DateTime  @default(now())
-
-  tasks Task[]
 }
 
 model Project {
@@ -48,35 +32,7 @@ model Project {
   active      Boolean       @default(true)
   createdAt   DateTime      @default(now())
 
-  tasks    Task[]
   comments Comment[]
-}
-
-model Task {
-  id            String       @id @default(cuid())
-  title         String
-  description   String?
-  location      String?
-  status        TaskStatus   @default(NEW)
-  priority      TaskPriority @default(NORMAL)
-  reporterName  String?
-  reporterPhone String?
-  dueDate       DateTime?
-  completedAt   DateTime?
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-
-  electricianId String?
-  electrician   Electrician? @relation(fields: [electricianId], references: [id])
-
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id])
-
-  comments Comment[]
-
-  @@index([status])
-  @@index([electricianId])
-  @@index([projectId])
 }
 
 model Announcement {
@@ -92,12 +48,8 @@ model Comment {
   body      String
   createdAt DateTime @default(now())
 
-  taskId String?
-  task   Task?   @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id], onDelete: Cascade)
 
-  projectId String?
-  project   Project? @relation(fields: [projectId], references: [id], onDelete: Cascade)
-
-  @@index([taskId])
   @@index([projectId])
 }

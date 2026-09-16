@@ -16,10 +16,7 @@ export default async function ElectricianDetailPage({
   const { id } = await params;
 
   const [electrician, viewer] = await Promise.all([
-    prisma.electrician.findUnique({
-      where: { id },
-      include: { _count: { select: { tasks: true } } },
-    }),
+    prisma.electrician.findUnique({ where: { id } }),
     isViewer(),
   ]);
 
@@ -40,8 +37,7 @@ export default async function ElectricianDetailPage({
       <div className="flex items-center justify-between">
         <h1 className="text-xl font-bold">עריכת חשמלאי</h1>
         <div className="text-xs text-slate-400">
-          נרשם: {formatDateTime(electrician.createdAt)} · {electrician._count.tasks}{" "}
-          משימות
+          נרשם: {formatDateTime(electrician.createdAt)}
         </div>
       </div>
 

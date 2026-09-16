@@ -9,13 +9,6 @@ export default async function ProjectsPage() {
   const [projects, viewer] = await Promise.all([
     prisma.project.findMany({
       orderBy: [{ active: "desc" }, { name: "asc" }],
-      include: {
-        _count: {
-          select: {
-            tasks: { where: { status: { notIn: ["DONE", "CANCELLED"] } } },
-          },
-        },
-      },
     }),
     isViewer(),
   ]);
@@ -49,9 +42,9 @@ export default async function ProjectsPage() {
                     <span className="text-xs text-slate-400">(לא פעיל)</span>
                   )}
                 </div>
-                <div className="text-sm text-slate-500">
-                  {p.description ?? "—"} · {p._count.tasks} משימות פתוחות
-                </div>
+                {p.description && (
+                  <div className="text-sm text-slate-500">{p.description}</div>
+                )}
               </div>
               {!viewer && (
                 <div className="flex gap-2">

@@ -16,7 +16,6 @@ export default async function ElectriciansPage() {
   const [electricians, viewer] = await Promise.all([
     prisma.electrician.findMany({
       orderBy: [{ active: "desc" }, { name: "asc" }],
-      include: { _count: { select: { tasks: true } } },
     }),
     isViewer(),
   ]);
@@ -43,7 +42,7 @@ export default async function ElectriciansPage() {
                   )}
                 </div>
                 <div className="text-sm text-slate-500">
-                  {e.phone ?? "—"} · {e._count.tasks} משימות
+                  {e.phone ?? "—"}
                   {formatBirthDate(e.birthDate) && (
                     <> · יום הולדת: {formatBirthDate(e.birthDate)}</>
                   )}
