@@ -54,14 +54,14 @@ export default async function DisplayPage() {
         <div>
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
-          <div className="mt-1 flex gap-3 text-sm">
+          <div className="mt-2 flex gap-2">
             <a
               href="https://t.me/Galam_Electrical_Bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-300 hover:text-blue-200 underline"
+              className="flex items-center gap-1.5 rounded-full border border-sky-700 bg-sky-950/60 px-3 py-1 text-sm font-medium text-sky-300 transition-colors hover:bg-sky-900"
             >
-              קבוצת טלגרם
+              <span>📱</span> קבוצת טלגרם
             </a>
           </div>
         </div>
