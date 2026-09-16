@@ -54,6 +54,16 @@ export default async function DisplayPage() {
         <div>
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
+          <div className="mt-1 flex gap-3 text-sm">
+            <a
+              href="https://t.me/Galam_Electrical_Bot"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-300 hover:text-blue-200 underline"
+            >
+              קבוצת טלגרם
+            </a>
+          </div>
         </div>
         <ClientClock />
       </div>
