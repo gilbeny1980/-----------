@@ -174,10 +174,39 @@ export async function createElectrician(formData: FormData) {
     },
   });
 
+  revalidateElectricianPaths();
+}
+
+function revalidateElectricianPaths(electricianId?: string) {
   revalidatePath("/electricians");
   revalidatePath("/tasks");
   revalidatePath("/tasks/new");
   revalidatePath("/");
+  if (electricianId) revalidatePath(`/electricians/${electricianId}`);
+}
+
+export async function updateElectrician(
+  electricianId: string,
+  formData: FormData,
+) {
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם החשמלאי הוא שדה חובה");
+  }
+
+  const birthDateRaw = asOrNull(formData.get("birthDate"));
+
+  await prisma.electrician.update({
+    where: { id: electricianId },
+    data: {
+      name,
+      phone: asOrNull(formData.get("phone")),
+      birthDate: birthDateRaw ? new Date(birthDateRaw) : null,
+    },
+  });
+
+  revalidateElectricianPaths(electricianId);
+  redirect(`/electricians/${electricianId}`);
 }
 
 export async function toggleElectricianActive(
@@ -188,8 +217,7 @@ export async function toggleElectricianActive(
     where: { id: electricianId },
     data: { active },
   });
-  revalidatePath("/electricians");
-  revalidatePath("/tasks");
+  revalidateElectricianPaths(electricianId);
 }
 
 export async function deleteElectrician(electricianId: string) {
@@ -200,6 +228,8 @@ export async function deleteElectrician(electricianId: string) {
   await prisma.electrician.delete({ where: { id: electricianId } });
   revalidatePath("/electricians");
   revalidatePath("/tasks");
+  revalidatePath("/");
+  redirect("/electricians");
 }
 
 export async function createProject(formData: FormData) {

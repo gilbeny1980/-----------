@@ -57,6 +57,17 @@ export default async function DisplayPage() {
     e.birthDate ? isBirthdayToday(e.birthDate) : false,
   );
 
+  const now = new Date();
+  const birthdayFeedItems = birthdayElectricians.map((e) => ({
+    id: `birthday-${e.id}`,
+    message: `🎂 היום יום ההולדת של ${e.name}!`,
+    createdAt: now,
+  }));
+
+  const feedItems = [...birthdayFeedItems, ...logs]
+    .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
+    .slice(0, 15);
+
   return (
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
       <meta httpEquiv="refresh" content="60" />
@@ -158,17 +169,17 @@ export default async function DisplayPage() {
             <span>🕒</span> עדכונים אחרונים
           </h2>
           <div className="flex-1 space-y-2 overflow-y-auto">
-            {logs.length === 0 ? (
+            {feedItems.length === 0 ? (
               <p className="text-sm text-slate-400">אין עדכונים עדיין</p>
             ) : (
-              logs.map((log) => (
+              feedItems.map((item) => (
                 <div
-                  key={log.id}
+                  key={item.id}
                   className="border-b border-slate-800 pb-2 text-sm last:border-0"
                 >
-                  <div>{log.message}</div>
+                  <div>{item.message}</div>
                   <div className="text-xs text-slate-500">
-                    {formatRelativeTime(log.createdAt)}
+                    {formatRelativeTime(item.createdAt)}
                   </div>
                 </div>
               ))

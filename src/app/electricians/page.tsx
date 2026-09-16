@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteElectrician, toggleElectricianActive } from "@/app/actions";
 import { AddElectricianForm } from "./AddElectricianForm";
@@ -30,7 +31,9 @@ export default async function ElectriciansPage() {
             <div key={e.id} className="flex items-center justify-between p-4">
               <div>
                 <div className="font-medium">
-                  {e.name}{" "}
+                  <Link href={`/electricians/${e.id}`} className="hover:text-blue-600">
+                    {e.name}
+                  </Link>{" "}
                   {!e.active && (
                     <span className="text-xs text-slate-400">(לא פעיל)</span>
                   )}
@@ -43,6 +46,12 @@ export default async function ElectriciansPage() {
                 </div>
               </div>
               <div className="flex gap-2">
+                <Link
+                  href={`/electricians/${e.id}`}
+                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                >
+                  עריכה
+                </Link>
                 <form
                   action={toggleElectricianActive.bind(null, e.id, !e.active)}
                 >
