@@ -65,7 +65,7 @@ export async function createTask(formData: FormData) {
   await logActivity(`נפתחה משימה חדשה: "${title}"`, task.id);
 
   revalidateTaskPaths();
-  redirect(`/tasks/${task.id}`);
+  redirect("/");
 }
 
 export async function updateTask(taskId: string, formData: FormData) {
