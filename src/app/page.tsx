@@ -61,7 +61,7 @@ export default async function DisplayPage() {
               rel="noopener noreferrer"
               className="flex items-center gap-1.5 rounded-full border border-sky-700 bg-sky-950/60 px-3 py-1 text-sm font-medium text-sky-300 transition-colors hover:bg-sky-900"
             >
-              <span>📱</span> קבוצת טלגרם
+              <span>📱</span> מדריך תפעול בטלגרם
             </a>
           </div>
         </div>
