@@ -1,9 +1,13 @@
-import type { TaskPriority, TaskStatus } from "@/generated/prisma/enums";
+import type {
+  ProjectStatus,
+  TaskPriority,
+  TaskStatus,
+} from "@/generated/prisma/enums";
 
 export const STATUS_LABELS: Record<TaskStatus, string> = {
-  NEW: "חדשה",
+  NEW: "לביצוע",
   IN_PROGRESS: "בטיפול",
-  DONE: "הושלמה",
+  DONE: "בוצע",
   CANCELLED: "בוטלה",
 };
 
@@ -14,11 +18,37 @@ export const STATUS_ORDER: TaskStatus[] = [
   "CANCELLED",
 ];
 
+// Statuses offered when editing a task - CANCELLED stays a valid historical
+// value but isn't offered as a new choice, per the simplified 3-status flow.
+export const TASK_STATUS_FORM_OPTIONS: TaskStatus[] = [
+  "NEW",
+  "IN_PROGRESS",
+  "DONE",
+];
+
 export const STATUS_BADGE_CLASSES: Record<TaskStatus, string> = {
   NEW: "bg-blue-100 text-blue-800 border-blue-200",
   IN_PROGRESS: "bg-amber-100 text-amber-800 border-amber-200",
   DONE: "bg-green-100 text-green-800 border-green-200",
   CANCELLED: "bg-gray-100 text-gray-500 border-gray-200",
+};
+
+export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
+  TODO: "לביצוע",
+  IN_PROGRESS: "בטיפול",
+  DONE: "בוצע",
+};
+
+export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
+  "TODO",
+  "IN_PROGRESS",
+  "DONE",
+];
+
+export const PROJECT_STATUS_BADGE_CLASSES: Record<ProjectStatus, string> = {
+  TODO: "bg-blue-100 text-blue-800 border-blue-200",
+  IN_PROGRESS: "bg-amber-100 text-amber-800 border-amber-200",
+  DONE: "bg-green-100 text-green-800 border-green-200",
 };
 
 export const PRIORITY_LABELS: Record<TaskPriority, string> = {

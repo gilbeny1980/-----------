@@ -1,5 +1,7 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { deleteProject, toggleProjectActive } from "@/app/actions";
+import { PROJECT_STATUS_BADGE_CLASSES, PROJECT_STATUS_LABELS } from "@/lib/labels";
 import { AddProjectForm } from "./AddProjectForm";
 
 export default async function ProjectsPage() {
@@ -27,8 +29,18 @@ export default async function ProjectsPage() {
           projects.map((p) => (
             <div key={p.id} className="flex items-center justify-between p-4">
               <div>
-                <div className="font-medium">
-                  {p.name}{" "}
+                <div className="flex items-center gap-2">
+                  <Link
+                    href={`/projects/${p.id}`}
+                    className="font-medium hover:text-blue-600"
+                  >
+                    {p.name}
+                  </Link>
+                  <span
+                    className={`rounded-full border px-2 py-0.5 text-xs font-medium ${PROJECT_STATUS_BADGE_CLASSES[p.status]}`}
+                  >
+                    {PROJECT_STATUS_LABELS[p.status]}
+                  </span>
                   {!p.active && (
                     <span className="text-xs text-slate-400">(לא פעיל)</span>
                   )}
@@ -38,6 +50,12 @@ export default async function ProjectsPage() {
                 </div>
               </div>
               <div className="flex gap-2">
+                <Link
+                  href={`/projects/${p.id}`}
+                  className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
+                >
+                  עריכה
+                </Link>
                 <form action={toggleProjectActive.bind(null, p.id, !p.active)}>
                   <button
                     type="submit"

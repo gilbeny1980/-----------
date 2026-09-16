@@ -1,12 +1,15 @@
 import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { updateTask, deleteTask } from "@/app/actions";
+import { addTaskComment, updateTask, deleteTask } from "@/app/actions";
+import { CommentForm } from "@/app/CommentForm";
 import {
   PRIORITY_LABELS,
   STATUS_LABELS,
+  TASK_STATUS_FORM_OPTIONS,
+  formatDate,
   formatDateTime,
 } from "@/lib/labels";
-import { TaskPriority, TaskStatus } from "@/generated/prisma/enums";
+import { TaskPriority } from "@/generated/prisma/enums";
 
 export default async function TaskDetailPage({
   params,
@@ -16,7 +19,13 @@ export default async function TaskDetailPage({
   const { id } = await params;
 
   const [task, electricians, projects] = await Promise.all([
-    prisma.task.findUnique({ where: { id }, include: { electrician: true } }),
+    prisma.task.findUnique({
+      where: { id },
+      include: {
+        electrician: true,
+        comments: { orderBy: { createdAt: "desc" } },
+      },
+    }),
     prisma.electrician.findMany({
       where: { active: true },
       orderBy: { name: "asc" },
@@ -33,6 +42,11 @@ export default async function TaskDetailPage({
 
   const updateTaskWithId = updateTask.bind(null, task.id);
   const deleteTaskWithId = deleteTask.bind(null, task.id);
+  const addCommentWithId = addTaskComment.bind(null, task.id);
+
+  const statusOptions = TASK_STATUS_FORM_OPTIONS.includes(task.status)
+    ? TASK_STATUS_FORM_OPTIONS
+    : [...TASK_STATUS_FORM_OPTIONS, task.status];
 
   return (
     <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-4">
@@ -83,12 +97,17 @@ export default async function TaskDetailPage({
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
           <Field label="סטטוס">
             <select name="status" className="input" defaultValue={task.status}>
-              {(Object.keys(STATUS_LABELS) as TaskStatus[]).map((s) => (
+              {statusOptions.map((s) => (
                 <option key={s} value={s}>
                   {STATUS_LABELS[s]}
                 </option>
               ))}
             </select>
+            <span className="mt-1 block text-xs text-slate-400">
+              {task.status === "DONE" && task.completedAt
+                ? `בוצע בתאריך ${formatDate(task.completedAt)}`
+                : `נפתחה בתאריך ${formatDate(task.createdAt)}`}
+            </span>
           </Field>
           <Field label="שיוך לחשמלאי">
             <select
@@ -157,6 +176,28 @@ export default async function TaskDetailPage({
           שמירת שינויים
         </button>
       </form>
+
+      <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
+        <h2 className="mb-3 font-bold">הערות</h2>
+        <CommentForm action={addCommentWithId} />
+        {task.comments.length === 0 ? (
+          <p className="text-sm text-slate-400">אין הערות עדיין</p>
+        ) : (
+          <ul className="space-y-2">
+            {task.comments.map((comment) => (
+              <li
+                key={comment.id}
+                className="rounded-md bg-slate-50 p-3 text-sm"
+              >
+                <p>{comment.body}</p>
+                <p className="mt-1 text-xs text-slate-400">
+                  {formatDateTime(comment.createdAt)}
+                </p>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
 
       <form action={deleteTaskWithId}>
         <button

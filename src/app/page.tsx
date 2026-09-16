@@ -1,19 +1,34 @@
 import { prisma } from "@/lib/prisma";
-import { PRIORITY_BADGE_CLASSES, PRIORITY_LABELS, formatRelativeTime } from "@/lib/labels";
+import {
+  PROJECT_STATUS_BADGE_CLASSES,
+  PROJECT_STATUS_LABELS,
+  STATUS_BADGE_CLASSES,
+  STATUS_LABELS,
+  formatDate,
+  formatRelativeTime,
+} from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
 
 export const dynamic = "force-dynamic";
 
+function isBirthdayToday(birthDate: Date): boolean {
+  const today = new Date();
+  return (
+    birthDate.getMonth() === today.getMonth() &&
+    birthDate.getDate() === today.getDate()
+  );
+}
+
 export default async function DisplayPage() {
-  const [urgentTasks, projects, logs, openCount, inProgressCount] =
+  const [urgentTasks, projects, logs, openCount, inProgressCount, electricians] =
     await Promise.all([
       prisma.task.findMany({
         where: {
-          priority: { in: ["URGENT", "HIGH"] },
+          priority: "URGENT",
           status: { notIn: ["DONE", "CANCELLED"] },
         },
         include: { electrician: true, project: true },
-        orderBy: [{ priority: "desc" }, { createdAt: "asc" }],
+        orderBy: [{ createdAt: "asc" }],
         take: 10,
       }),
       prisma.project.findMany({
@@ -33,7 +48,14 @@ export default async function DisplayPage() {
       }),
       prisma.task.count({ where: { status: { notIn: ["DONE", "CANCELLED"] } } }),
       prisma.task.count({ where: { status: "IN_PROGRESS" } }),
+      prisma.electrician.findMany({
+        where: { active: true, birthDate: { not: null } },
+      }),
     ]);
+
+  const birthdayElectricians = electricians.filter((e) =>
+    e.birthDate ? isBirthdayToday(e.birthDate) : false,
+  );
 
   return (
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
@@ -49,10 +71,19 @@ export default async function DisplayPage() {
         <ClientClock />
       </div>
 
+      {birthdayElectricians.length > 0 && (
+        <div className="mx-4 mt-4 rounded-xl border border-pink-800 bg-pink-950/40 px-4 py-3 text-center">
+          <span className="text-lg font-bold text-pink-200">
+            🎂 היום יום ההולדת של{" "}
+            {birthdayElectricians.map((e) => e.name).join(", ")}!
+          </span>
+        </div>
+      )}
+
       <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-3">
         <section className="flex flex-col rounded-xl border border-red-900 bg-red-950/30 p-4">
           <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-red-300">
-            <span>🚨</span> תקלות דחופות לטיפול
+            <span>🚨</span> תקלות דחופות לביצוע
           </h2>
           <div className="flex-1 space-y-3 overflow-y-auto">
             {urgentTasks.length === 0 ? (
@@ -68,14 +99,16 @@ export default async function DisplayPage() {
                   <div className="flex items-center justify-between gap-2">
                     <span className="font-semibold">{task.title}</span>
                     <span
-                      className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${PRIORITY_BADGE_CLASSES[task.priority]}`}
+                      className={`shrink-0 rounded-full border px-2 py-0.5 text-xs font-medium ${STATUS_BADGE_CLASSES[task.status]}`}
                     >
-                      {PRIORITY_LABELS[task.priority]}
+                      {STATUS_LABELS[task.status]}
                     </span>
                   </div>
                   <div className="mt-1 text-xs text-slate-400">
                     {task.location ?? "—"} · {task.electrician?.name ?? "לא משויך"}
                     {task.project ? ` · ${task.project.name}` : ""}
+                    {" · נפתחה "}
+                    {formatDate(task.createdAt)}
                   </div>
                 </div>
               ))
@@ -97,7 +130,14 @@ export default async function DisplayPage() {
                   className="flex items-center justify-between rounded-lg bg-slate-800/60 p-3"
                 >
                   <div>
-                    <div className="font-medium">{project.name}</div>
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium">{project.name}</span>
+                      <span
+                        className={`rounded-full border px-2 py-0.5 text-xs font-medium ${PROJECT_STATUS_BADGE_CLASSES[project.status]}`}
+                      >
+                        {PROJECT_STATUS_LABELS[project.status]}
+                      </span>
+                    </div>
                     {project.description && (
                       <div className="text-xs text-slate-400">
                         {project.description}

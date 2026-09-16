@@ -23,6 +23,12 @@ export function AddElectricianForm() {
         <span className="mb-1 block text-sm font-medium text-slate-700">טלפון</span>
         <input name="phone" dir="ltr" className="input" />
       </label>
+      <label className="flex-1 min-w-[10rem]">
+        <span className="mb-1 block text-sm font-medium text-slate-700">
+          תאריך לידה
+        </span>
+        <input type="date" name="birthDate" className="input" />
+      </label>
       <button
         type="submit"
         className="rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"

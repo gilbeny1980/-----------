@@ -2,6 +2,14 @@ import { prisma } from "@/lib/prisma";
 import { deleteElectrician, toggleElectricianActive } from "@/app/actions";
 import { AddElectricianForm } from "./AddElectricianForm";
 
+function formatBirthDate(date: Date | null): string | null {
+  if (!date) return null;
+  return new Intl.DateTimeFormat("he-IL", {
+    day: "2-digit",
+    month: "2-digit",
+  }).format(date);
+}
+
 export default async function ElectriciansPage() {
   const electricians = await prisma.electrician.findMany({
     orderBy: [{ active: "desc" }, { name: "asc" }],
@@ -29,6 +37,9 @@ export default async function ElectriciansPage() {
                 </div>
                 <div className="text-sm text-slate-500">
                   {e.phone ?? "—"} · {e._count.tasks} משימות
+                  {formatBirthDate(e.birthDate) && (
+                    <> · יום הולדת: {formatBirthDate(e.birthDate)}</>
+                  )}
                 </div>
               </div>
               <div className="flex gap-2">

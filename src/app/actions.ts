@@ -4,8 +4,12 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { logActivity } from "@/lib/activity";
-import { TaskPriority, TaskStatus } from "@/generated/prisma/enums";
-import { STATUS_LABELS } from "@/lib/labels";
+import {
+  ProjectStatus,
+  TaskPriority,
+  TaskStatus,
+} from "@/generated/prisma/enums";
+import { PROJECT_STATUS_LABELS, STATUS_LABELS } from "@/lib/labels";
 
 function asOrNull(value: FormDataEntryValue | null): string | null {
   const str = (value ?? "").toString().trim();
@@ -18,6 +22,10 @@ function isTaskStatus(value: string): value is TaskStatus {
 
 function isTaskPriority(value: string): value is TaskPriority {
   return (Object.values(TaskPriority) as string[]).includes(value);
+}
+
+function isProjectStatus(value: string): value is ProjectStatus {
+  return (Object.values(ProjectStatus) as string[]).includes(value);
 }
 
 function revalidateTaskPaths(taskId?: string) {
@@ -132,6 +140,14 @@ export async function updateTask(taskId: string, formData: FormData) {
   redirect(`/tasks/${taskId}`);
 }
 
+export async function addTaskComment(taskId: string, formData: FormData) {
+  const body = (formData.get("body") ?? "").toString().trim();
+  if (!body) return;
+
+  await prisma.comment.create({ data: { body, taskId } });
+  revalidateTaskPaths(taskId);
+}
+
 export async function deleteTask(taskId: string) {
   const task = await prisma.task.findUnique({ where: { id: taskId } });
   if (task) {
@@ -148,16 +164,20 @@ export async function createElectrician(formData: FormData) {
     throw new Error("שם החשמלאי הוא שדה חובה");
   }
 
+  const birthDateRaw = asOrNull(formData.get("birthDate"));
+
   await prisma.electrician.create({
     data: {
       name,
       phone: asOrNull(formData.get("phone")),
+      birthDate: birthDateRaw ? new Date(birthDateRaw) : null,
     },
   });
 
   revalidatePath("/electricians");
   revalidatePath("/tasks");
   revalidatePath("/tasks/new");
+  revalidatePath("/");
 }
 
 export async function toggleElectricianActive(
@@ -203,14 +223,59 @@ export async function createProject(formData: FormData) {
   revalidatePath("/");
 }
 
+function revalidateProjectPaths(projectId?: string) {
+  revalidatePath("/projects");
+  revalidatePath("/tasks");
+  revalidatePath("/");
+  if (projectId) revalidatePath(`/projects/${projectId}`);
+}
+
+export async function updateProject(projectId: string, formData: FormData) {
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם הפרויקט הוא שדה חובה");
+  }
+
+  const statusRaw = (formData.get("status") ?? "TODO").toString();
+  const status = isProjectStatus(statusRaw) ? statusRaw : "TODO";
+
+  const existing = await prisma.project.findUniqueOrThrow({
+    where: { id: projectId },
+  });
+
+  await prisma.project.update({
+    where: { id: projectId },
+    data: {
+      name,
+      description: asOrNull(formData.get("description")),
+      status,
+    },
+  });
+
+  if (status !== existing.status) {
+    await logActivity(
+      `סטטוס הפרויקט "${name}" עודכן ל${PROJECT_STATUS_LABELS[status]}`,
+    );
+  }
+
+  revalidateProjectPaths(projectId);
+  redirect(`/projects/${projectId}`);
+}
+
+export async function addProjectComment(projectId: string, formData: FormData) {
+  const body = (formData.get("body") ?? "").toString().trim();
+  if (!body) return;
+
+  await prisma.comment.create({ data: { body, projectId } });
+  revalidateProjectPaths(projectId);
+}
+
 export async function toggleProjectActive(projectId: string, active: boolean) {
   await prisma.project.update({
     where: { id: projectId },
     data: { active },
   });
-  revalidatePath("/projects");
-  revalidatePath("/tasks");
-  revalidatePath("/");
+  revalidateProjectPaths(projectId);
 }
 
 export async function deleteProject(projectId: string) {
@@ -222,4 +287,5 @@ export async function deleteProject(projectId: string) {
   revalidatePath("/projects");
   revalidatePath("/tasks");
   revalidatePath("/");
+  redirect("/projects");
 }
