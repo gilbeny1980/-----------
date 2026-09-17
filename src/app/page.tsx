@@ -17,19 +17,21 @@ function isBirthdayToday(birthDate: Date): boolean {
 }
 
 export default async function DisplayPage() {
-  const [projects, announcements, electricians] = await Promise.all([
-    prisma.project.findMany({
-      where: { active: true },
-      orderBy: { name: "asc" },
-    }),
-    prisma.announcement.findMany({
-      orderBy: { createdAt: "desc" },
-      take: 15,
-    }),
-    prisma.electrician.findMany({
-      where: { active: true, birthDate: { not: null } },
-    }),
-  ]);
+  const [projects, announcements, electricians, transformers] =
+    await Promise.all([
+      prisma.project.findMany({
+        where: { active: true },
+        orderBy: { name: "asc" },
+      }),
+      prisma.announcement.findMany({
+        orderBy: { createdAt: "desc" },
+        take: 15,
+      }),
+      prisma.electrician.findMany({
+        where: { active: true, birthDate: { not: null } },
+      }),
+      prisma.transformer.findMany({ orderBy: { name: "asc" } }),
+    ]);
 
   const birthdayElectricians = electricians.filter((e) =>
     e.birthDate ? isBirthdayToday(e.birthDate) : false,
@@ -75,6 +77,31 @@ export default async function DisplayPage() {
             {birthdayElectricians.map((e) => e.name).join(", ")}!
           </span>
         </div>
+      )}
+
+      {transformers.length > 0 && (
+        <section className="mx-4 mt-4 rounded-xl border border-slate-800 bg-slate-900 p-4">
+          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-emerald-300">
+            <span>⚡</span> שנאים - ביקוש הספק ומקדם הספק
+          </h2>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+            {transformers.map((t) => (
+              <div
+                key={t.id}
+                className="rounded-lg border border-slate-800 bg-slate-800/60 p-3 text-center"
+              >
+                <div className="text-sm font-bold text-slate-300">{t.name}</div>
+                <div className="mt-1 text-xl font-bold text-emerald-300">
+                  {t.activePowerKw !== null ? t.activePowerKw : "—"}
+                  <span className="text-xs font-normal text-slate-400"> kW</span>
+                </div>
+                <div className="text-xs text-slate-400">
+                  מקדם הספק: {t.powerFactor !== null ? t.powerFactor : "—"}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
       )}
 
       <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-2">

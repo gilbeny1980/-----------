@@ -50,6 +50,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                   >
                     הודעות
                   </Link>
+                  <Link
+                    href="/transformers"
+                    className="hover:text-amber-300 transition-colors"
+                  >
+                    שנאים
+                  </Link>
                 </>
               )}
             </nav>

@@ -11,6 +11,13 @@ function asOrNull(value: FormDataEntryValue | null): string | null {
   return str.length > 0 ? str : null;
 }
 
+function asFloatOrNull(value: FormDataEntryValue | null): number | null {
+  const str = asOrNull(value);
+  if (str === null) return null;
+  const num = Number(str);
+  return Number.isFinite(num) ? num : null;
+}
+
 function isProjectStatus(value: string): value is ProjectStatus {
   return (Object.values(ProjectStatus) as string[]).includes(value);
 }
@@ -184,4 +191,45 @@ export async function deleteAnnouncement(announcementId: string) {
   await prisma.announcement.delete({ where: { id: announcementId } });
   revalidatePath("/announcements");
   revalidatePath("/");
+}
+
+function revalidateTransformerPaths() {
+  revalidatePath("/transformers");
+  revalidatePath("/");
+}
+
+export async function createTransformer(formData: FormData) {
+  await assertNotViewer();
+
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם השנאי הוא שדה חובה");
+  }
+
+  await prisma.transformer.create({ data: { name } });
+  revalidateTransformerPaths();
+}
+
+export async function updateTransformerReading(
+  transformerId: string,
+  formData: FormData,
+) {
+  await assertNotViewer();
+
+  await prisma.transformer.update({
+    where: { id: transformerId },
+    data: {
+      activePowerKw: asFloatOrNull(formData.get("activePowerKw")),
+      powerFactor: asFloatOrNull(formData.get("powerFactor")),
+    },
+  });
+
+  revalidateTransformerPaths();
+}
+
+export async function deleteTransformer(transformerId: string) {
+  await assertNotViewer();
+
+  await prisma.transformer.delete({ where: { id: transformerId } });
+  revalidateTransformerPaths();
 }
