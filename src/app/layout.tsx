@@ -56,6 +56,12 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                   >
                     שנאים
                   </Link>
+                  <Link
+                    href="/distribution"
+                    className="hover:text-amber-300 transition-colors"
+                  >
+                    חלוקת ציוד
+                  </Link>
                 </>
               )}
             </nav>

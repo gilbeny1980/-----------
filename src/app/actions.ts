@@ -239,3 +239,88 @@ export async function deleteTransformer(transformerId: string) {
   await prisma.transformer.delete({ where: { id: transformerId } });
   revalidateTransformerPaths();
 }
+
+function revalidateDistributionPaths() {
+  revalidatePath("/distribution");
+  revalidatePath("/distribution/items");
+}
+
+export async function createDistributionRecord(formData: FormData) {
+  await assertNotViewer();
+
+  const recipient = (formData.get("recipient") ?? "").toString().trim();
+  if (!recipient) {
+    throw new Error("שם המקבל הוא שדה חובה");
+  }
+
+  const itemId = (formData.get("itemId") ?? "").toString();
+  if (!itemId) {
+    throw new Error("יש לבחור פריט");
+  }
+
+  const quantity = asFloatOrNull(formData.get("quantity"));
+  if (quantity === null || quantity <= 0) {
+    throw new Error("כמות לא תקינה");
+  }
+
+  await prisma.distributionRecord.create({
+    data: {
+      recipient,
+      itemId,
+      quantity,
+      note: asOrNull(formData.get("note")),
+    },
+  });
+
+  revalidateDistributionPaths();
+}
+
+export async function deleteDistributionRecord(recordId: string) {
+  await assertNotViewer();
+
+  await prisma.distributionRecord.delete({ where: { id: recordId } });
+  revalidateDistributionPaths();
+}
+
+export async function createDistributionItem(formData: FormData) {
+  await assertNotViewer();
+
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם הפריט הוא שדה חובה");
+  }
+
+  const last = await prisma.distributionItem.findFirst({
+    orderBy: { order: "desc" },
+  });
+
+  await prisma.distributionItem.create({
+    data: {
+      name,
+      unit: asOrNull(formData.get("unit")),
+      order: (last?.order ?? 0) + 1,
+    },
+  });
+
+  revalidateDistributionPaths();
+}
+
+export async function toggleDistributionItemActive(
+  itemId: string,
+  active: boolean,
+) {
+  await assertNotViewer();
+
+  await prisma.distributionItem.update({
+    where: { id: itemId },
+    data: { active },
+  });
+  revalidateDistributionPaths();
+}
+
+export async function deleteDistributionItem(itemId: string) {
+  await assertNotViewer();
+
+  await prisma.distributionItem.delete({ where: { id: itemId } });
+  revalidateDistributionPaths();
+}
