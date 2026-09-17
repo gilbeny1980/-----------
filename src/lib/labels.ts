@@ -18,11 +18,11 @@ export const PROJECT_STATUS_BADGE_CLASSES: Record<ProjectStatus, string> = {
   DONE: "bg-green-100 text-green-800 border-green-200",
 };
 
-export function formatPowerKw(kw: number): string {
+export function getPowerParts(kw: number): { value: string; unit: string } {
   if (kw >= 1000) {
-    return `${(kw / 1000).toFixed(2)} MW`;
+    return { value: (kw / 1000).toFixed(2), unit: "MW" };
   }
-  return `${Math.round(kw * 10) / 10} kW`;
+  return { value: String(Math.round(kw * 10) / 10), unit: "kW" };
 }
 
 export function formatDate(date: Date | string | null | undefined): string {

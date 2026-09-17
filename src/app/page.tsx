@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 import {
   PROJECT_STATUS_BADGE_CLASSES,
   PROJECT_STATUS_LABELS,
-  formatPowerKw,
+  getPowerParts,
   formatRelativeTime,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
@@ -53,6 +53,7 @@ export default async function DisplayPage() {
     (sum, t) => sum + (t.activePowerKw ?? 0),
     0,
   );
+  const totalPowerParts = getPowerParts(totalPowerKw);
 
   return (
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
@@ -91,8 +92,12 @@ export default async function DisplayPage() {
             <h2 className="flex items-center gap-2 text-lg font-bold text-emerald-300">
               <span>⚡</span> שנאים - ביקוש הספק ומקדם הספק
             </h2>
-            <span className="rounded-full bg-emerald-950/60 border border-emerald-800 px-3 py-1 text-sm font-bold text-emerald-300">
-              סה&quot;כ: {formatPowerKw(totalPowerKw)}
+            <span className="flex items-baseline gap-1.5 rounded-full border border-emerald-800 bg-emerald-950/60 px-3 py-1 text-sm font-bold text-emerald-300">
+              <span>סה&quot;כ:</span>
+              <span className="text-xs font-normal text-emerald-400">
+                {totalPowerParts.unit}
+              </span>
+              <span>{totalPowerParts.value}</span>
             </span>
           </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
