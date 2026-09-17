@@ -2,6 +2,7 @@ import { prisma } from "@/lib/prisma";
 import {
   PROJECT_STATUS_BADGE_CLASSES,
   PROJECT_STATUS_LABELS,
+  formatPowerKw,
   formatRelativeTime,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
@@ -48,6 +49,11 @@ export default async function DisplayPage() {
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 15);
 
+  const totalPowerKw = transformers.reduce(
+    (sum, t) => sum + (t.activePowerKw ?? 0),
+    0,
+  );
+
   return (
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
       <meta httpEquiv="refresh" content="60" />
@@ -81,9 +87,14 @@ export default async function DisplayPage() {
 
       {transformers.length > 0 && (
         <section className="mx-4 mt-4 rounded-xl border border-slate-800 bg-slate-900 p-4">
-          <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-emerald-300">
-            <span>⚡</span> שנאים - ביקוש הספק ומקדם הספק
-          </h2>
+          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+            <h2 className="flex items-center gap-2 text-lg font-bold text-emerald-300">
+              <span>⚡</span> שנאים - ביקוש הספק ומקדם הספק
+            </h2>
+            <span className="rounded-full bg-emerald-950/60 border border-emerald-800 px-3 py-1 text-sm font-bold text-emerald-300">
+              סה&quot;כ: {formatPowerKw(totalPowerKw)}
+            </span>
+          </div>
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
             {transformers.map((t) => (
               <div
@@ -91,12 +102,19 @@ export default async function DisplayPage() {
                 className="rounded-lg border border-slate-800 bg-slate-800/60 p-3 text-center"
               >
                 <div className="text-sm font-bold text-slate-300">{t.name}</div>
-                <div className="mt-1 text-xl font-bold text-emerald-300">
-                  {t.activePowerKw !== null ? t.activePowerKw : "—"}
-                  <span className="text-xs font-normal text-slate-400"> kW</span>
+                <div className="mt-1 flex items-baseline justify-center gap-1">
+                  <span className="text-xs font-normal text-slate-400">kW</span>
+                  <span className="text-xl font-bold text-emerald-300">
+                    {t.activePowerKw !== null
+                      ? Math.round(t.activePowerKw * 10) / 10
+                      : "—"}
+                  </span>
                 </div>
                 <div className="text-xs text-slate-400">
-                  מקדם הספק: {t.powerFactor !== null ? t.powerFactor : "—"}
+                  מקדם הספק:{" "}
+                  {t.powerFactor !== null
+                    ? Math.round(t.powerFactor * 100) / 100
+                    : "—"}
                 </div>
               </div>
             ))}
