@@ -206,7 +206,13 @@ export async function createTransformer(formData: FormData) {
     throw new Error("שם השנאי הוא שדה חובה");
   }
 
-  await prisma.transformer.create({ data: { name } });
+  const last = await prisma.transformer.findFirst({
+    orderBy: { order: "desc" },
+  });
+
+  await prisma.transformer.create({
+    data: { name, order: (last?.order ?? 0) + 1 },
+  });
   revalidateTransformerPaths();
 }
 

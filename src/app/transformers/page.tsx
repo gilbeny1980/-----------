@@ -6,7 +6,7 @@ import { AddTransformerForm } from "./AddTransformerForm";
 
 export default async function TransformersPage() {
   const [transformers, viewer] = await Promise.all([
-    prisma.transformer.findMany({ orderBy: { name: "asc" } }),
+    prisma.transformer.findMany({ orderBy: { order: "asc" } }),
     isViewer(),
   ]);
 

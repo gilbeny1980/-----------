@@ -30,7 +30,7 @@ export default async function DisplayPage() {
       prisma.electrician.findMany({
         where: { active: true, birthDate: { not: null } },
       }),
-      prisma.transformer.findMany({ orderBy: { name: "asc" } }),
+      prisma.transformer.findMany({ orderBy: { order: "asc" } }),
     ]);
 
   const birthdayElectricians = electricians.filter((e) =>

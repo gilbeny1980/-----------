@@ -38,6 +38,7 @@ model Project {
 model Transformer {
   id            String   @id @default(cuid())
   name          String
+  order         Int      @default(0)
   activePowerKw Float?
   powerFactor   Float?
   updatedAt     DateTime @updatedAt
