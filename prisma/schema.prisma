@@ -53,31 +53,6 @@ model Announcement {
   @@index([createdAt])
 }
 
-model DistributionItem {
-  id        String   @id @default(cuid())
-  name      String
-  unit      String?
-  order     Int      @default(0)
-  active    Boolean  @default(true)
-  createdAt DateTime @default(now())
-
-  records DistributionRecord[]
-}
-
-model DistributionRecord {
-  id        String   @id @default(cuid())
-  recipient String
-  quantity  Float
-  note      String?
-  createdAt DateTime @default(now())
-
-  itemId String
-  item   DistributionItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-
-  @@index([itemId])
-  @@index([createdAt])
-}
-
 model Comment {
   id        String   @id @default(cuid())
   body      String
