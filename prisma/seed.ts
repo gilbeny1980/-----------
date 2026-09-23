@@ -24,6 +24,36 @@ async function main() {
       ],
     });
   }
+
+  const categoryCount = await prisma.serviceCategory.count();
+  if (categoryCount === 0) {
+    await prisma.serviceCategory.create({
+      data: {
+        name: "מזגנים",
+        order: 1,
+        companies: { create: [{ name: "שירות הוגן", order: 1 }] },
+      },
+    });
+    await prisma.serviceCategory.create({
+      data: {
+        name: "חדרי קירור",
+        order: 2,
+        companies: { create: [{ name: "שירות הוגן", order: 1 }] },
+      },
+    });
+    await prisma.serviceCategory.create({
+      data: {
+        name: "מעליות",
+        order: 3,
+        companies: {
+          create: [
+            { name: "אם.טי ליפט", order: 1 },
+            { name: "אלקטרה", order: 2 },
+          ],
+        },
+      },
+    });
+  }
 }
 
 main()

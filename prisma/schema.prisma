@@ -63,3 +63,34 @@ model Comment {
 
   @@index([projectId])
 }
+
+model ServiceCategory {
+  id    String @id @default(cuid())
+  name  String
+  order Int    @default(0)
+
+  companies ServiceCompany[]
+}
+
+model ServiceCompany {
+  id    String @id @default(cuid())
+  name  String
+  order Int    @default(0)
+
+  categoryId String
+  category   ServiceCategory  @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  contacts   ServiceContact[]
+
+  @@index([categoryId])
+}
+
+model ServiceContact {
+  id    String  @id @default(cuid())
+  name  String
+  phone String?
+
+  companyId String
+  company   ServiceCompany @relation(fields: [companyId], references: [id], onDelete: Cascade)
+
+  @@index([companyId])
+}

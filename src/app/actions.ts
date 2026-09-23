@@ -239,3 +239,85 @@ export async function deleteTransformer(transformerId: string) {
   await prisma.transformer.delete({ where: { id: transformerId } });
   revalidateTransformerPaths();
 }
+
+function revalidateProviderPaths() {
+  revalidatePath("/providers");
+}
+
+export async function createServiceCategory(formData: FormData) {
+  await assertNotViewer();
+
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם התחום הוא שדה חובה");
+  }
+
+  const last = await prisma.serviceCategory.findFirst({
+    orderBy: { order: "desc" },
+  });
+
+  await prisma.serviceCategory.create({
+    data: { name, order: (last?.order ?? 0) + 1 },
+  });
+  revalidateProviderPaths();
+}
+
+export async function deleteServiceCategory(categoryId: string) {
+  await assertNotViewer();
+
+  await prisma.serviceCategory.delete({ where: { id: categoryId } });
+  revalidateProviderPaths();
+}
+
+export async function createServiceCompany(
+  categoryId: string,
+  formData: FormData,
+) {
+  await assertNotViewer();
+
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם הספק הוא שדה חובה");
+  }
+
+  const last = await prisma.serviceCompany.findFirst({
+    where: { categoryId },
+    orderBy: { order: "desc" },
+  });
+
+  await prisma.serviceCompany.create({
+    data: { name, categoryId, order: (last?.order ?? 0) + 1 },
+  });
+  revalidateProviderPaths();
+}
+
+export async function deleteServiceCompany(companyId: string) {
+  await assertNotViewer();
+
+  await prisma.serviceCompany.delete({ where: { id: companyId } });
+  revalidateProviderPaths();
+}
+
+export async function createServiceContact(
+  companyId: string,
+  formData: FormData,
+) {
+  await assertNotViewer();
+
+  const name = (formData.get("name") ?? "").toString().trim();
+  if (!name) {
+    throw new Error("שם איש הקשר הוא שדה חובה");
+  }
+
+  await prisma.serviceContact.create({
+    data: { name, phone: asOrNull(formData.get("phone")), companyId },
+  });
+  revalidateProviderPaths();
+}
+
+export async function deleteServiceContact(contactId: string) {
+  await assertNotViewer();
+
+  await prisma.serviceContact.delete({ where: { id: contactId } });
+  revalidateProviderPaths();
+}
