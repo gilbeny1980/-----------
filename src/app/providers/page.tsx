@@ -90,7 +90,19 @@ export default async function ProvidersPage() {
                           >
                             <span>
                               {contact.name}
-                              {contact.phone ? ` · ${contact.phone}` : ""}
+                              {contact.role ? ` (${contact.role})` : ""}
+                              {contact.phone ? (
+                                <>
+                                  {" · "}
+                                  <a
+                                    href={`tel:${contact.phone}`}
+                                    dir="ltr"
+                                    className="text-blue-600 hover:underline"
+                                  >
+                                    {contact.phone}
+                                  </a>
+                                </>
+                              ) : null}
                             </span>
                             {!viewer && (
                               <form

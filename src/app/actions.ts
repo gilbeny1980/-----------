@@ -310,7 +310,12 @@ export async function createServiceContact(
   }
 
   await prisma.serviceContact.create({
-    data: { name, phone: asOrNull(formData.get("phone")), companyId },
+    data: {
+      name,
+      role: asOrNull(formData.get("role")),
+      phone: asOrNull(formData.get("phone")),
+      companyId,
+    },
   });
   revalidateProviderPaths();
 }

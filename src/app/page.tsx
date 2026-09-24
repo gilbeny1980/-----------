@@ -6,6 +6,7 @@ import {
   formatRelativeTime,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
+import { ServiceProviderPicker } from "./ServiceProviderPicker";
 
 export const dynamic = "force-dynamic";
 
@@ -18,7 +19,7 @@ function isBirthdayToday(birthDate: Date): boolean {
 }
 
 export default async function DisplayPage() {
-  const [projects, announcements, electricians, transformers] =
+  const [projects, announcements, electricians, transformers, serviceCategories] =
     await Promise.all([
       prisma.project.findMany({
         where: { active: true },
@@ -32,6 +33,15 @@ export default async function DisplayPage() {
         where: { active: true, birthDate: { not: null } },
       }),
       prisma.transformer.findMany({ orderBy: { order: "asc" } }),
+      prisma.serviceCategory.findMany({
+        orderBy: { order: "asc" },
+        include: {
+          companies: {
+            orderBy: { order: "asc" },
+            include: { contacts: { orderBy: { name: "asc" } } },
+          },
+        },
+      }),
     ]);
 
   const birthdayElectricians = electricians.filter((e) =>
@@ -72,6 +82,7 @@ export default async function DisplayPage() {
             >
               <span>📱</span> מדריך תפעול בטלגרם
             </a>
+            <ServiceProviderPicker categories={serviceCategories} />
           </div>
         </div>
         <ClientClock />

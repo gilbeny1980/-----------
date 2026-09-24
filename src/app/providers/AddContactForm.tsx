@@ -17,6 +17,7 @@ export function AddContactForm({ companyId }: { companyId: string }) {
       className="flex flex-wrap items-end gap-2"
     >
       <input name="name" required className="input flex-1 min-w-[7rem]" placeholder="שם איש קשר" />
+      <input name="role" className="input flex-1 min-w-[7rem]" placeholder="תפקיד" />
       <input name="phone" dir="ltr" className="input flex-1 min-w-[7rem]" placeholder="טלפון" />
       <button
         type="submit"

@@ -87,6 +87,7 @@ model ServiceCompany {
 model ServiceContact {
   id    String  @id @default(cuid())
   name  String
+  role  String?
   phone String?
 
   companyId String
