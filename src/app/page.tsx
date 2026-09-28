@@ -8,6 +8,7 @@ import { ClientClock } from "./ClientClock";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
 import { UpdatesTicker } from "./UpdatesTicker";
 import { WorkOrdersPanel } from "./WorkOrdersPanel";
+import { getWorkOrdersTitle } from "@/lib/settings";
 
 export const dynamic = "force-dynamic";
 
@@ -27,6 +28,7 @@ export default async function DisplayPage() {
     transformers,
     serviceCategories,
     workOrders,
+    workOrdersTitle,
   ] = await Promise.all([
     prisma.project.findMany({
       where: { active: true },
@@ -54,6 +56,7 @@ export default async function DisplayPage() {
       orderBy: { createdAt: "desc" },
       include: { electrician: { select: { name: true } } },
     }),
+    getWorkOrdersTitle(),
   ]);
 
   const birthdayElectricians = electricians.filter((e) =>
@@ -190,7 +193,7 @@ export default async function DisplayPage() {
 
         <section className="flex flex-col rounded-xl border border-slate-800 bg-slate-900 p-4">
           <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-blue-300">
-            <span>🛠️</span> משימות
+            <span>🛠️</span> {workOrdersTitle}
           </h2>
           <WorkOrdersPanel workOrders={workOrders} />
         </section>

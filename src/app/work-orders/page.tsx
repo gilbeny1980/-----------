@@ -1,13 +1,15 @@
 import { prisma } from "@/lib/prisma";
 import { deleteWorkOrder } from "@/app/actions";
 import { formatDateTime } from "@/lib/labels";
+import { getWorkOrdersTitle } from "@/lib/settings";
 import { AddWorkOrderForm } from "./AddWorkOrderForm";
 import { WorkOrderStatusSelect } from "./WorkOrderStatusSelect";
 import { EquipmentField } from "./EquipmentField";
 import { EditWorkOrderForm } from "./EditWorkOrderForm";
+import { WorkOrdersTitleForm } from "./WorkOrdersTitleForm";
 
 export default async function WorkOrdersPage() {
-  const [workOrders, electricians] = await Promise.all([
+  const [workOrders, electricians, workOrdersTitle] = await Promise.all([
     prisma.workOrder.findMany({
       orderBy: { createdAt: "desc" },
       include: { electrician: true },
@@ -16,11 +18,12 @@ export default async function WorkOrdersPage() {
       where: { active: true },
       orderBy: { name: "asc" },
     }),
+    getWorkOrdersTitle(),
   ]);
 
   return (
     <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-6">
-      <h1 className="text-xl font-bold">משימות</h1>
+      <WorkOrdersTitleForm title={workOrdersTitle} />
       <p className="text-sm text-slate-500">
         משימות עבודה (לדוגמה השבה, הדממה) המשויכות לעובד וסטטוס. משימות פתוחות
         מוצגות במסך התצוגה.

@@ -115,6 +115,22 @@ function revalidateWorkOrderPaths() {
   revalidatePath("/");
 }
 
+export async function updateWorkOrdersTitle(formData: FormData) {
+  await assertAdmin();
+
+  const title = (formData.get("workOrdersTitle") ?? "").toString().trim();
+  if (!title) {
+    throw new Error("כותרת היא שדה חובה");
+  }
+
+  await prisma.appSettings.upsert({
+    where: { id: "singleton" },
+    create: { id: "singleton", workOrdersTitle: title },
+    update: { workOrdersTitle: title },
+  });
+  revalidateWorkOrderPaths();
+}
+
 export async function createWorkOrder(formData: FormData) {
   await assertAdmin();
 

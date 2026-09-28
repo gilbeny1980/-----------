@@ -53,6 +53,11 @@ model AdminUser {
   createdAt    DateTime @default(now())
 }
 
+model AppSettings {
+  id              String @id @default("singleton")
+  workOrdersTitle String @default("משימות")
+}
+
 model Project {
   id          String        @id @default(cuid())
   name        String
