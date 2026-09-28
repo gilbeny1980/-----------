@@ -15,6 +15,12 @@ enum ProjectStatus {
   DONE
 }
 
+enum WorkOrderStatus {
+  OPEN
+  IN_PROGRESS
+  DONE
+}
+
 model Electrician {
   id        String    @id @default(cuid())
   name      String
@@ -22,6 +28,27 @@ model Electrician {
   birthDate DateTime?
   active    Boolean   @default(true)
   createdAt DateTime  @default(now())
+
+  workOrders WorkOrder[]
+}
+
+model WorkOrder {
+  id        String          @id @default(cuid())
+  title     String
+  status    WorkOrderStatus @default(OPEN)
+  createdAt DateTime        @default(now())
+
+  electricianId String?
+  electrician   Electrician? @relation(fields: [electricianId], references: [id], onDelete: SetNull)
+
+  @@index([electricianId])
+}
+
+model AdminUser {
+  id           String   @id @default(cuid())
+  username     String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
 }
 
 model Project {

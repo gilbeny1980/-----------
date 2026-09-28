@@ -1,4 +1,4 @@
-import type { ProjectStatus } from "@/generated/prisma/enums";
+import type { ProjectStatus, WorkOrderStatus } from "@/generated/prisma/enums";
 
 export const PROJECT_STATUS_LABELS: Record<ProjectStatus, string> = {
   TODO: "לביצוע",
@@ -14,6 +14,24 @@ export const PROJECT_STATUS_ORDER: ProjectStatus[] = [
 
 export const PROJECT_STATUS_BADGE_CLASSES: Record<ProjectStatus, string> = {
   TODO: "bg-blue-100 text-blue-800 border-blue-200",
+  IN_PROGRESS: "bg-amber-100 text-amber-800 border-amber-200",
+  DONE: "bg-green-100 text-green-800 border-green-200",
+};
+
+export const WORK_ORDER_STATUS_LABELS: Record<WorkOrderStatus, string> = {
+  OPEN: "פתוח",
+  IN_PROGRESS: "בטיפול",
+  DONE: "הושלם",
+};
+
+export const WORK_ORDER_STATUS_ORDER: WorkOrderStatus[] = [
+  "OPEN",
+  "IN_PROGRESS",
+  "DONE",
+];
+
+export const WORK_ORDER_STATUS_BADGE_CLASSES: Record<WorkOrderStatus, string> = {
+  OPEN: "bg-blue-100 text-blue-800 border-blue-200",
   IN_PROGRESS: "bg-amber-100 text-amber-800 border-amber-200",
   DONE: "bg-green-100 text-green-800 border-green-200",
 };

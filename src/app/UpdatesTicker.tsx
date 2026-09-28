@@ -1,47 +1,29 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { formatRelativeTime } from "@/lib/labels";
-
-type FeedItem = { id: string; message: string; createdAt: Date };
+type FeedItem = { id: string; message: string };
 
 export function UpdatesTicker({ items }: { items: FeedItem[] }) {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    if (items.length <= 1) return;
-    const interval = setInterval(() => {
-      setIndex((i) => (i + 1) % items.length);
-    }, 5000);
-    return () => clearInterval(interval);
-  }, [items.length]);
-
   if (items.length === 0) {
-    return <p className="text-sm text-slate-400">אין עדכונים עדיין</p>;
+    return null;
   }
 
-  const item = items[index % items.length];
+  const text = items.map((i) => i.message).join("      •      ");
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center gap-3 text-center">
-      <div key={item.id} className="text-lg">
-        {item.message}
+    <div className="relative min-w-0 flex-1 overflow-hidden">
+      <div className="ticker-track flex w-max whitespace-nowrap text-sm font-medium text-blue-200">
+        <span className="pe-12">{text}</span>
+        <span className="pe-12" aria-hidden>
+          {text}
+        </span>
       </div>
-      <div className="text-xs text-slate-500">
-        {formatRelativeTime(item.createdAt)}
-      </div>
-      {items.length > 1 && (
-        <div className="flex gap-1.5">
-          {items.map((it, i) => (
-            <span
-              key={it.id}
-              className={`h-1.5 w-1.5 rounded-full ${
-                i === index ? "bg-blue-400" : "bg-slate-700"
-              }`}
-            />
-          ))}
-        </div>
-      )}
+      <style>{`
+        .ticker-track {
+          animation: ticker-scroll 25s linear infinite;
+        }
+        @keyframes ticker-scroll {
+          from { transform: translateX(0); }
+          to { transform: translateX(-50%); }
+        }
+      `}</style>
     </div>
   );
 }

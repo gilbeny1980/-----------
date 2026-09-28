@@ -5,7 +5,17 @@ import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/role";
-import { ProjectStatus } from "@/generated/prisma/enums";
+import { hashPassword, verifyPassword } from "@/lib/password";
+import { ProjectStatus, WorkOrderStatus } from "@/generated/prisma/enums";
+
+async function setAdminCookie() {
+  const cookieStore = await cookies();
+  cookieStore.set("role", "admin", {
+    maxAge: 60 * 60 * 24 * 365,
+    httpOnly: true,
+    sameSite: "lax",
+  });
+}
 
 export type LoginState = { error?: string };
 
@@ -13,24 +23,115 @@ export async function loginAdmin(
   _prevState: LoginState,
   formData: FormData,
 ): Promise<LoginState> {
+  const username = (formData.get("username") ?? "").toString().trim();
   const password = (formData.get("password") ?? "").toString();
-  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
-    return { error: "סיסמה שגויה" };
+
+  const user = await prisma.adminUser.findUnique({ where: { username } });
+  if (!user || !verifyPassword(password, user.passwordHash)) {
+    return { error: "שם משתמש או סיסמה שגויים" };
   }
 
-  const cookieStore = await cookies();
-  cookieStore.set("role", "admin", {
-    maxAge: 60 * 60 * 24 * 365,
-    httpOnly: true,
-    sameSite: "lax",
-  });
+  await setAdminCookie();
   redirect("/projects");
+}
+
+export type CreateAdminUserState = { error?: string };
+
+export async function createFirstAdminUser(
+  _prevState: CreateAdminUserState,
+  formData: FormData,
+): Promise<CreateAdminUserState> {
+  const existing = await prisma.adminUser.count();
+  if (existing > 0) {
+    return { error: "כבר קיים משתמש מנהל" };
+  }
+
+  const username = (formData.get("username") ?? "").toString().trim();
+  const password = (formData.get("password") ?? "").toString();
+  if (!username || !password) {
+    return { error: "יש למלא שם משתמש וסיסמה" };
+  }
+
+  await prisma.adminUser.create({
+    data: { username, passwordHash: hashPassword(password) },
+  });
+  await setAdminCookie();
+  redirect("/projects");
+}
+
+export async function createAdminUser(formData: FormData) {
+  await assertAdmin();
+
+  const username = (formData.get("username") ?? "").toString().trim();
+  const password = (formData.get("password") ?? "").toString();
+  if (!username || !password) {
+    throw new Error("יש למלא שם משתמש וסיסמה");
+  }
+
+  await prisma.adminUser.create({
+    data: { username, passwordHash: hashPassword(password) },
+  });
+  revalidatePath("/admin-users");
+}
+
+export async function deleteAdminUser(userId: string) {
+  await assertAdmin();
+
+  const count = await prisma.adminUser.count();
+  if (count <= 1) {
+    throw new Error("לא ניתן למחוק את המשתמש היחיד");
+  }
+
+  await prisma.adminUser.delete({ where: { id: userId } });
+  revalidatePath("/admin-users");
 }
 
 export async function logoutAdmin() {
   const cookieStore = await cookies();
   cookieStore.delete("role");
   redirect("/");
+}
+
+function revalidateWorkOrderPaths() {
+  revalidatePath("/work-orders");
+  revalidatePath("/");
+}
+
+export async function createWorkOrder(formData: FormData) {
+  await assertAdmin();
+
+  const title = (formData.get("title") ?? "").toString().trim();
+  if (!title) {
+    throw new Error("כותרת היא שדה חובה");
+  }
+
+  await prisma.workOrder.create({
+    data: {
+      title,
+      electricianId: asOrNull(formData.get("electricianId")),
+    },
+  });
+  revalidateWorkOrderPaths();
+}
+
+export async function updateWorkOrderStatus(
+  workOrderId: string,
+  status: WorkOrderStatus,
+) {
+  await assertAdmin();
+
+  await prisma.workOrder.update({
+    where: { id: workOrderId },
+    data: { status },
+  });
+  revalidateWorkOrderPaths();
+}
+
+export async function deleteWorkOrder(workOrderId: string) {
+  await assertAdmin();
+
+  await prisma.workOrder.delete({ where: { id: workOrderId } });
+  revalidateWorkOrderPaths();
 }
 
 function asOrNull(value: FormDataEntryValue | null): string | null {

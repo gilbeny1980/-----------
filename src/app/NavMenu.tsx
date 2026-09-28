@@ -64,6 +64,20 @@ export function NavMenu({ admin }: { admin: boolean }) {
                 >
                   נותני שירות
                 </Link>
+                <Link
+                  href="/work-orders"
+                  className="block px-4 py-2 hover:bg-slate-800"
+                  onClick={() => setIsOpen(false)}
+                >
+                  משימות
+                </Link>
+                <Link
+                  href="/admin-users"
+                  className="block px-4 py-2 hover:bg-slate-800"
+                  onClick={() => setIsOpen(false)}
+                >
+                  משתמשי מנהל
+                </Link>
                 <form action={logoutAdmin} className="border-t border-slate-700">
                   <button
                     type="submit"

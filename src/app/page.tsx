@@ -7,6 +7,7 @@ import {
 import { ClientClock } from "./ClientClock";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
 import { UpdatesTicker } from "./UpdatesTicker";
+import { WorkOrdersPanel } from "./WorkOrdersPanel";
 
 export const dynamic = "force-dynamic";
 
@@ -19,30 +20,41 @@ function isBirthdayToday(birthDate: Date): boolean {
 }
 
 export default async function DisplayPage() {
-  const [projects, announcements, electricians, transformers, serviceCategories] =
-    await Promise.all([
-      prisma.project.findMany({
-        where: { active: true },
-        orderBy: { name: "asc" },
-      }),
-      prisma.announcement.findMany({
-        orderBy: { createdAt: "desc" },
-        take: 15,
-      }),
-      prisma.electrician.findMany({
-        where: { active: true, birthDate: { not: null } },
-      }),
-      prisma.transformer.findMany({ orderBy: { order: "asc" } }),
-      prisma.serviceCategory.findMany({
-        orderBy: { order: "asc" },
-        include: {
-          companies: {
-            orderBy: { order: "asc" },
-            include: { contacts: { orderBy: { name: "asc" } } },
-          },
+  const [
+    projects,
+    announcements,
+    electricians,
+    transformers,
+    serviceCategories,
+    workOrders,
+  ] = await Promise.all([
+    prisma.project.findMany({
+      where: { active: true },
+      orderBy: { name: "asc" },
+    }),
+    prisma.announcement.findMany({
+      orderBy: { createdAt: "desc" },
+      take: 15,
+    }),
+    prisma.electrician.findMany({
+      where: { active: true, birthDate: { not: null } },
+    }),
+    prisma.transformer.findMany({ orderBy: { order: "asc" } }),
+    prisma.serviceCategory.findMany({
+      orderBy: { order: "asc" },
+      include: {
+        companies: {
+          orderBy: { order: "asc" },
+          include: { contacts: { orderBy: { name: "asc" } } },
         },
-      }),
-    ]);
+      },
+    }),
+    prisma.workOrder.findMany({
+      where: { status: { not: "DONE" } },
+      orderBy: { createdAt: "desc" },
+      include: { electrician: { select: { name: true } } },
+    }),
+  ]);
 
   const birthdayElectricians = electricians.filter((e) =>
     e.birthDate ? isBirthdayToday(e.birthDate) : false,
@@ -69,8 +81,8 @@ export default async function DisplayPage() {
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
       <meta httpEquiv="refresh" content="60" />
 
-      <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 px-6 py-5">
-        <div>
+      <div className="flex flex-wrap items-center gap-4 border-b border-slate-800 px-6 py-5">
+        <div className="shrink-0">
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
           <div className="mt-2 flex gap-2">
@@ -85,6 +97,7 @@ export default async function DisplayPage() {
             <ServiceProviderPicker categories={serviceCategories} />
           </div>
         </div>
+        <UpdatesTicker items={feedItems} />
         <ClientClock />
       </div>
 
@@ -175,9 +188,9 @@ export default async function DisplayPage() {
 
         <section className="flex flex-col rounded-xl border border-slate-800 bg-slate-900 p-4">
           <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-blue-300">
-            <span>🕒</span> עדכונים אחרונים
+            <span>🛠️</span> משימות
           </h2>
-          <UpdatesTicker items={feedItems} />
+          <WorkOrdersPanel workOrders={workOrders} />
         </section>
       </div>
     </div>
