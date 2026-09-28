@@ -35,6 +35,7 @@ model Electrician {
 model WorkOrder {
   id              String          @id @default(cuid())
   title           String
+  description     String?
   status          WorkOrderStatus @default(OPEN)
   equipmentIssued String?
   createdAt       DateTime        @default(now())

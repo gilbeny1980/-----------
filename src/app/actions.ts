@@ -126,6 +126,7 @@ export async function createWorkOrder(formData: FormData) {
   await prisma.workOrder.create({
     data: {
       title,
+      description: asOrNull(formData.get("description")),
       electricianId: asOrNull(formData.get("electricianId")),
       equipmentIssued: asOrNull(formData.get("equipmentIssued")),
     },
@@ -145,6 +146,7 @@ export async function updateWorkOrder(workOrderId: string, formData: FormData) {
     where: { id: workOrderId },
     data: {
       title,
+      description: asOrNull(formData.get("description")),
       electricianId: asOrNull(formData.get("electricianId")),
     },
   });

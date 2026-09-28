@@ -32,6 +32,12 @@ export function AddWorkOrderForm({
         <option value="השבה" />
         <option value="הדממה" />
       </datalist>
+      <textarea
+        name="description"
+        rows={1}
+        className="input flex-1 min-w-[12rem]"
+        placeholder="תיאור המשימה"
+      />
       <select name="electricianId" className="input flex-1 min-w-[8rem]" defaultValue="">
         <option value="">ללא שיוך</option>
         {electricians.map((e) => (

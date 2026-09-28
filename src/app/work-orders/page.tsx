@@ -37,6 +37,7 @@ export default async function WorkOrdersPage() {
               <EditWorkOrderForm
                 workOrderId={wo.id}
                 title={wo.title}
+                description={wo.description}
                 electricianId={wo.electricianId}
                 electricians={electricians}
               />

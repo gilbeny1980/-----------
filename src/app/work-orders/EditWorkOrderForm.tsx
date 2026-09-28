@@ -7,11 +7,13 @@ type Electrician = { id: string; name: string };
 export function EditWorkOrderForm({
   workOrderId,
   title,
+  description,
   electricianId,
   electricians,
 }: {
   workOrderId: string;
   title: string;
+  description: string | null;
   electricianId: string | null;
   electricians: Electrician[];
 }) {
@@ -26,6 +28,13 @@ export function EditWorkOrderForm({
         defaultValue={title}
         list="work-order-title-suggestions"
         className="input flex-1 min-w-[10rem] font-medium"
+      />
+      <textarea
+        name="description"
+        rows={1}
+        defaultValue={description ?? ""}
+        className="input flex-1 min-w-[12rem]"
+        placeholder="תיאור המשימה"
       />
       <select
         name="electricianId"
