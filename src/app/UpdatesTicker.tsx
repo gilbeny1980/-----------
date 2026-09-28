@@ -5,29 +5,36 @@ export function UpdatesTicker({ items }: { items: FeedItem[] }) {
     return null;
   }
 
+  const durationSeconds = Math.max(items.length * 3, 6);
+
   const renderItems = (keyPrefix: string) =>
-    items.map((item, i) => (
-      <span key={`${keyPrefix}-${item.id}`} className="flex items-center">
-        {i > 0 && <span className="mx-6 text-blue-500">•</span>}
+    items.map((item) => (
+      <div
+        key={`${keyPrefix}-${item.id}`}
+        className="flex h-7 items-center justify-center truncate px-2 text-sm font-medium text-blue-200"
+      >
         {item.message}
-      </span>
+      </div>
     ));
 
   return (
-    <div className="relative min-w-0 flex-1 overflow-hidden">
-      <div className="ticker-track flex w-max items-center whitespace-nowrap text-sm font-medium text-blue-200">
-        <span className="flex items-center pe-12">{renderItems("a")}</span>
-        <span className="flex items-center pe-12" aria-hidden>
-          {renderItems("b")}
-        </span>
+    <div className="relative h-7 w-full shrink-0 overflow-hidden sm:w-72">
+      <div
+        className="ticker-track-vertical"
+        style={{ animationDuration: `${durationSeconds}s` }}
+      >
+        {renderItems("a")}
+        {renderItems("b")}
       </div>
       <style>{`
-        .ticker-track {
-          animation: ticker-scroll 25s linear infinite;
+        .ticker-track-vertical {
+          animation-name: ticker-scroll-vertical;
+          animation-timing-function: linear;
+          animation-iteration-count: infinite;
         }
-        @keyframes ticker-scroll {
-          from { transform: translateX(-50%); }
-          to { transform: translateX(0); }
+        @keyframes ticker-scroll-vertical {
+          from { transform: translateY(0); }
+          to { transform: translateY(-50%); }
         }
       `}</style>
     </div>
