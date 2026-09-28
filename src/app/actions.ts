@@ -133,6 +133,24 @@ export async function createWorkOrder(formData: FormData) {
   revalidateWorkOrderPaths();
 }
 
+export async function updateWorkOrder(workOrderId: string, formData: FormData) {
+  await assertAdmin();
+
+  const title = (formData.get("title") ?? "").toString().trim();
+  if (!title) {
+    throw new Error("כותרת היא שדה חובה");
+  }
+
+  await prisma.workOrder.update({
+    where: { id: workOrderId },
+    data: {
+      title,
+      electricianId: asOrNull(formData.get("electricianId")),
+    },
+  });
+  revalidateWorkOrderPaths();
+}
+
 export async function updateWorkOrderStatus(
   workOrderId: string,
   status: WorkOrderStatus,

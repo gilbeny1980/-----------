@@ -4,6 +4,7 @@ import { formatDateTime } from "@/lib/labels";
 import { AddWorkOrderForm } from "./AddWorkOrderForm";
 import { WorkOrderStatusSelect } from "./WorkOrderStatusSelect";
 import { EquipmentField } from "./EquipmentField";
+import { EditWorkOrderForm } from "./EditWorkOrderForm";
 
 export default async function WorkOrdersPage() {
   const [workOrders, electricians] = await Promise.all([
@@ -32,15 +33,15 @@ export default async function WorkOrdersPage() {
           <p className="p-6 text-center text-slate-500">אין משימות רשומות</p>
         ) : (
           workOrders.map((wo) => (
-            <div key={wo.id} className="flex flex-wrap items-center justify-between gap-3 p-4">
-              <div>
-                <div className="font-medium">{wo.title}</div>
-                <div className="text-sm text-slate-500">
-                  {wo.electrician?.name ?? "ללא שיוך"}
-                </div>
-                <div className="text-xs text-slate-400">
-                  נוצר: {formatDateTime(wo.createdAt)}
-                </div>
+            <div key={wo.id} className="space-y-2 p-4">
+              <EditWorkOrderForm
+                workOrderId={wo.id}
+                title={wo.title}
+                electricianId={wo.electricianId}
+                electricians={electricians}
+              />
+              <div className="text-xs text-slate-400">
+                נוצר: {formatDateTime(wo.createdAt)}
               </div>
               <div className="flex flex-wrap items-center gap-2">
                 <EquipmentField
