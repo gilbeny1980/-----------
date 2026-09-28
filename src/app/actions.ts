@@ -74,6 +74,24 @@ export async function createAdminUser(formData: FormData) {
   revalidatePath("/admin-users");
 }
 
+export async function updateAdminUserPassword(
+  userId: string,
+  formData: FormData,
+) {
+  await assertAdmin();
+
+  const password = (formData.get("password") ?? "").toString();
+  if (!password) {
+    throw new Error("יש למלא סיסמה חדשה");
+  }
+
+  await prisma.adminUser.update({
+    where: { id: userId },
+    data: { passwordHash: hashPassword(password) },
+  });
+  revalidatePath("/admin-users");
+}
+
 export async function deleteAdminUser(userId: string) {
   await assertAdmin();
 
