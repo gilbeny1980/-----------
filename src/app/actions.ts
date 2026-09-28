@@ -127,6 +127,7 @@ export async function createWorkOrder(formData: FormData) {
     data: {
       title,
       electricianId: asOrNull(formData.get("electricianId")),
+      equipmentIssued: asOrNull(formData.get("equipmentIssued")),
     },
   });
   revalidateWorkOrderPaths();
@@ -141,6 +142,19 @@ export async function updateWorkOrderStatus(
   await prisma.workOrder.update({
     where: { id: workOrderId },
     data: { status },
+  });
+  revalidateWorkOrderPaths();
+}
+
+export async function updateWorkOrderEquipment(
+  workOrderId: string,
+  formData: FormData,
+) {
+  await assertAdmin();
+
+  await prisma.workOrder.update({
+    where: { id: workOrderId },
+    data: { equipmentIssued: asOrNull(formData.get("equipmentIssued")) },
   });
   revalidateWorkOrderPaths();
 }

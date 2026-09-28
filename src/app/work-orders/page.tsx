@@ -3,6 +3,7 @@ import { deleteWorkOrder } from "@/app/actions";
 import { formatDateTime } from "@/lib/labels";
 import { AddWorkOrderForm } from "./AddWorkOrderForm";
 import { WorkOrderStatusSelect } from "./WorkOrderStatusSelect";
+import { EquipmentField } from "./EquipmentField";
 
 export default async function WorkOrdersPage() {
   const [workOrders, electricians] = await Promise.all([
@@ -41,7 +42,11 @@ export default async function WorkOrdersPage() {
                   נוצר: {formatDateTime(wo.createdAt)}
                 </div>
               </div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <EquipmentField
+                  workOrderId={wo.id}
+                  equipmentIssued={wo.equipmentIssued}
+                />
                 <WorkOrderStatusSelect workOrderId={wo.id} status={wo.status} />
                 <form action={deleteWorkOrder.bind(null, wo.id)}>
                   <button

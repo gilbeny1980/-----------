@@ -8,6 +8,7 @@ type WorkOrder = {
   title: string;
   status: "OPEN" | "IN_PROGRESS" | "DONE";
   electrician: { name: string } | null;
+  equipmentIssued: string | null;
 };
 
 export function WorkOrdersPanel({ workOrders }: { workOrders: WorkOrder[] }) {
@@ -32,6 +33,7 @@ export function WorkOrdersPanel({ workOrders }: { workOrders: WorkOrder[] }) {
               </div>
               <div className="text-xs text-slate-400">
                 {wo.electrician?.name ?? "ללא שיוך"}
+                {wo.equipmentIssued && ` · ציוד: ${wo.equipmentIssued}`}
               </div>
             </div>
           </div>

@@ -33,10 +33,11 @@ model Electrician {
 }
 
 model WorkOrder {
-  id        String          @id @default(cuid())
-  title     String
-  status    WorkOrderStatus @default(OPEN)
-  createdAt DateTime        @default(now())
+  id              String          @id @default(cuid())
+  title           String
+  status          WorkOrderStatus @default(OPEN)
+  equipmentIssued String?
+  createdAt       DateTime        @default(now())
 
   electricianId String?
   electrician   Electrician? @relation(fields: [electricianId], references: [id], onDelete: SetNull)

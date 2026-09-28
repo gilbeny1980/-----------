@@ -40,6 +40,11 @@ export function AddWorkOrderForm({
           </option>
         ))}
       </select>
+      <input
+        name="equipmentIssued"
+        className="input flex-1 min-w-[10rem]"
+        placeholder="ציוד שנופק מהמחסן"
+      />
       <button
         type="submit"
         className="rounded-md border border-slate-300 px-3 py-1.5 text-sm hover:bg-slate-50"
