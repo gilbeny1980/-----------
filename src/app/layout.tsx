@@ -22,7 +22,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
     <html lang="he" dir="rtl" className={`${heebo.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
         <header className="relative bg-slate-900 text-white shadow">
-          <div className="mx-auto max-w-5xl px-4 py-4 flex flex-wrap items-center justify-end gap-3">
+          <div className="mx-auto max-w-5xl px-4 py-4 flex flex-wrap items-center justify-center gap-3">
             <Link href="/" className="flex items-center gap-2">
               <span className="text-xl">⚡</span>
               <span className="font-bold text-lg">מחלקת חשמל - גלעם</span>

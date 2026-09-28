@@ -98,7 +98,9 @@ export default async function DisplayPage() {
           </div>
         </div>
         <UpdatesTicker items={feedItems} />
-        <ClientClock />
+        <div className="shrink-0">
+          <ClientClock />
+        </div>
       </div>
 
       {birthdayElectricians.length > 0 && (
