@@ -4,24 +4,20 @@ import {
   deleteServiceCompany,
   deleteServiceContact,
 } from "@/app/actions";
-import { isViewer } from "@/lib/role";
 import { AddCategoryForm } from "./AddCategoryForm";
 import { AddCompanyForm } from "./AddCompanyForm";
 import { AddContactForm } from "./AddContactForm";
 
 export default async function ProvidersPage() {
-  const [categories, viewer] = await Promise.all([
-    prisma.serviceCategory.findMany({
-      orderBy: { order: "asc" },
-      include: {
-        companies: {
-          orderBy: { order: "asc" },
-          include: { contacts: { orderBy: { name: "asc" } } },
-        },
+  const categories = await prisma.serviceCategory.findMany({
+    orderBy: { order: "asc" },
+    include: {
+      companies: {
+        orderBy: { order: "asc" },
+        include: { contacts: { orderBy: { name: "asc" } } },
       },
-    }),
-    isViewer(),
-  ]);
+    },
+  });
 
   return (
     <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-6">
@@ -30,7 +26,7 @@ export default async function ProvidersPage() {
         ספקי שירות ואנשי קשר לפי תחום (מזגנים, חדרי קירור, מעליות ועוד).
       </p>
 
-      {!viewer && <AddCategoryForm />}
+      <AddCategoryForm />
 
       <div className="space-y-4">
         {categories.length === 0 ? (
@@ -45,16 +41,14 @@ export default async function ProvidersPage() {
             >
               <div className="mb-3 flex items-center justify-between">
                 <h2 className="text-lg font-bold">{category.name}</h2>
-                {!viewer && (
-                  <form action={deleteServiceCategory.bind(null, category.id)}>
-                    <button
-                      type="submit"
-                      className="rounded-md border border-red-300 px-3 py-1 text-xs text-red-700 hover:bg-red-50"
-                    >
-                      מחיקת תחום
-                    </button>
-                  </form>
-                )}
+                <form action={deleteServiceCategory.bind(null, category.id)}>
+                  <button
+                    type="submit"
+                    className="rounded-md border border-red-300 px-3 py-1 text-xs text-red-700 hover:bg-red-50"
+                  >
+                    מחיקת תחום
+                  </button>
+                </form>
               </div>
 
               <div className="space-y-3">
@@ -65,18 +59,14 @@ export default async function ProvidersPage() {
                   >
                     <div className="mb-2 flex items-center justify-between">
                       <h3 className="font-semibold">{company.name}</h3>
-                      {!viewer && (
-                        <form
-                          action={deleteServiceCompany.bind(null, company.id)}
+                      <form action={deleteServiceCompany.bind(null, company.id)}>
+                        <button
+                          type="submit"
+                          className="rounded-md border border-red-300 px-2 py-0.5 text-xs text-red-700 hover:bg-red-50"
                         >
-                          <button
-                            type="submit"
-                            className="rounded-md border border-red-300 px-2 py-0.5 text-xs text-red-700 hover:bg-red-50"
-                          >
-                            מחיקה
-                          </button>
-                        </form>
-                      )}
+                          מחיקה
+                        </button>
+                      </form>
                     </div>
 
                     {company.contacts.length === 0 ? (
@@ -104,36 +94,32 @@ export default async function ProvidersPage() {
                                 </>
                               ) : null}
                             </span>
-                            {!viewer && (
-                              <form
-                                action={deleteServiceContact.bind(
-                                  null,
-                                  contact.id,
-                                )}
+                            <form
+                              action={deleteServiceContact.bind(
+                                null,
+                                contact.id,
+                              )}
+                            >
+                              <button
+                                type="submit"
+                                className="text-xs text-red-600 hover:underline"
                               >
-                                <button
-                                  type="submit"
-                                  className="text-xs text-red-600 hover:underline"
-                                >
-                                  מחיקה
-                                </button>
-                              </form>
-                            )}
+                                מחיקה
+                              </button>
+                            </form>
                           </li>
                         ))}
                       </ul>
                     )}
 
-                    {!viewer && <AddContactForm companyId={company.id} />}
+                    <AddContactForm companyId={company.id} />
                   </div>
                 ))}
               </div>
 
-              {!viewer && (
-                <div className="mt-3">
-                  <AddCompanyForm categoryId={category.id} />
-                </div>
-              )}
+              <div className="mt-3">
+                <AddCompanyForm categoryId={category.id} />
+              </div>
             </div>
           ))
         )}

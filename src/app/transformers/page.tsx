@@ -1,14 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { deleteTransformer, updateTransformerReading } from "@/app/actions";
-import { isViewer } from "@/lib/role";
 import { formatDateTime } from "@/lib/labels";
 import { AddTransformerForm } from "./AddTransformerForm";
 
 export default async function TransformersPage() {
-  const [transformers, viewer] = await Promise.all([
-    prisma.transformer.findMany({ orderBy: { order: "asc" } }),
-    isViewer(),
-  ]);
+  const transformers = await prisma.transformer.findMany({
+    orderBy: { order: "asc" },
+  });
 
   return (
     <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-6">
@@ -18,7 +16,7 @@ export default async function TransformersPage() {
         התצוגה.
       </p>
 
-      {!viewer && <AddTransformerForm />}
+      <AddTransformerForm />
 
       <div className="rounded-lg border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
         {transformers.length === 0 ? (
@@ -44,7 +42,6 @@ export default async function TransformersPage() {
                     name="activePowerKw"
                     className="input"
                     defaultValue={t.activePowerKw ?? ""}
-                    disabled={viewer}
                   />
                 </label>
                 <label className="flex-1 min-w-[8rem]">
@@ -57,29 +54,26 @@ export default async function TransformersPage() {
                     name="powerFactor"
                     className="input"
                     defaultValue={t.powerFactor ?? ""}
-                    disabled={viewer}
                   />
                 </label>
                 <div className="text-xs text-slate-400 min-w-[8rem]">
                   עודכן: {formatDateTime(t.updatedAt)}
                 </div>
-                {!viewer && (
-                  <div className="flex gap-2">
-                    <button
-                      type="submit"
-                      className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
-                    >
-                      עדכון
-                    </button>
-                    <button
-                      type="submit"
-                      formAction={deleteWithId}
-                      className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
-                    >
-                      מחיקה
-                    </button>
-                  </div>
-                )}
+                <div className="flex gap-2">
+                  <button
+                    type="submit"
+                    className="rounded-md bg-slate-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-slate-800"
+                  >
+                    עדכון
+                  </button>
+                  <button
+                    type="submit"
+                    formAction={deleteWithId}
+                    className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                  >
+                    מחיקה
+                  </button>
+                </div>
               </form>
             );
           })

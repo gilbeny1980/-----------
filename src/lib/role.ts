@@ -1,12 +1,12 @@
 import { cookies } from "next/headers";
 
-export async function isViewer(): Promise<boolean> {
+export async function isAdmin(): Promise<boolean> {
   const cookieStore = await cookies();
-  return cookieStore.get("role")?.value === "viewer";
+  return cookieStore.get("role")?.value === "admin";
 }
 
-export async function assertNotViewer() {
-  if (await isViewer()) {
-    throw new Error("צפייה בלבד - אין אפשרות לערוך");
+export async function assertAdmin() {
+  if (!(await isAdmin())) {
+    throw new Error("נדרשת הרשאת מנהל");
   }
 }

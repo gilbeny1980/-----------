@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Heebo } from "next/font/google";
 import Link from "next/link";
-import { isViewer } from "@/lib/role";
+import { isAdmin } from "@/lib/role";
+import { NavMenu } from "@/app/NavMenu";
 import "./globals.css";
 
 const heebo = Heebo({
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {
-  const viewer = await isViewer();
+  const admin = await isAdmin();
 
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} h-full antialiased`}>
@@ -26,45 +27,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
               <span className="text-xl">⚡</span>
               <span className="font-bold text-lg">מחלקת חשמל - גלעם</span>
             </Link>
-            <nav className="flex flex-wrap gap-4 text-sm font-medium">
-              <Link href="/" className="hover:text-amber-300 transition-colors">
-                מסך תצוגה
-              </Link>
-              {!viewer && (
-                <>
-                  <Link
-                    href="/projects"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    פרויקטים
-                  </Link>
-                  <Link
-                    href="/electricians"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    חשמלאים
-                  </Link>
-                  <Link
-                    href="/announcements"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    הודעות
-                  </Link>
-                  <Link
-                    href="/transformers"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    שנאים
-                  </Link>
-                  <Link
-                    href="/providers"
-                    className="hover:text-amber-300 transition-colors"
-                  >
-                    נותני שירות
-                  </Link>
-                </>
-              )}
-            </nav>
+            <NavMenu admin={admin} />
           </div>
         </header>
         <main className="flex-1 w-full flex flex-col">{children}</main>

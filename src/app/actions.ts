@@ -2,9 +2,36 @@
 
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
+import { cookies } from "next/headers";
 import { prisma } from "@/lib/prisma";
-import { assertNotViewer } from "@/lib/role";
+import { assertAdmin } from "@/lib/role";
 import { ProjectStatus } from "@/generated/prisma/enums";
+
+export type LoginState = { error?: string };
+
+export async function loginAdmin(
+  _prevState: LoginState,
+  formData: FormData,
+): Promise<LoginState> {
+  const password = (formData.get("password") ?? "").toString();
+  if (!process.env.ADMIN_PASSWORD || password !== process.env.ADMIN_PASSWORD) {
+    return { error: "סיסמה שגויה" };
+  }
+
+  const cookieStore = await cookies();
+  cookieStore.set("role", "admin", {
+    maxAge: 60 * 60 * 24 * 365,
+    httpOnly: true,
+    sameSite: "lax",
+  });
+  redirect("/projects");
+}
+
+export async function logoutAdmin() {
+  const cookieStore = await cookies();
+  cookieStore.delete("role");
+  redirect("/");
+}
 
 function asOrNull(value: FormDataEntryValue | null): string | null {
   const str = (value ?? "").toString().trim();
@@ -29,7 +56,7 @@ function revalidateElectricianPaths(electricianId?: string) {
 }
 
 export async function createElectrician(formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -53,7 +80,7 @@ export async function updateElectrician(
   electricianId: string,
   formData: FormData,
 ) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -79,7 +106,7 @@ export async function toggleElectricianActive(
   electricianId: string,
   active: boolean,
 ) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.electrician.update({
     where: { id: electricianId },
@@ -89,7 +116,7 @@ export async function toggleElectricianActive(
 }
 
 export async function deleteElectrician(electricianId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.electrician.delete({ where: { id: electricianId } });
   revalidatePath("/electricians");
@@ -104,7 +131,7 @@ function revalidateProjectPaths(projectId?: string) {
 }
 
 export async function createProject(formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -122,7 +149,7 @@ export async function createProject(formData: FormData) {
 }
 
 export async function updateProject(projectId: string, formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -146,7 +173,7 @@ export async function updateProject(projectId: string, formData: FormData) {
 }
 
 export async function addProjectComment(projectId: string, formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const body = (formData.get("body") ?? "").toString().trim();
   if (!body) return;
@@ -156,7 +183,7 @@ export async function addProjectComment(projectId: string, formData: FormData) {
 }
 
 export async function toggleProjectActive(projectId: string, active: boolean) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.project.update({
     where: { id: projectId },
@@ -166,7 +193,7 @@ export async function toggleProjectActive(projectId: string, active: boolean) {
 }
 
 export async function deleteProject(projectId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.project.delete({ where: { id: projectId } });
   revalidatePath("/projects");
@@ -175,7 +202,7 @@ export async function deleteProject(projectId: string) {
 }
 
 export async function createAnnouncement(formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const message = (formData.get("message") ?? "").toString().trim();
   if (!message) return;
@@ -186,7 +213,7 @@ export async function createAnnouncement(formData: FormData) {
 }
 
 export async function deleteAnnouncement(announcementId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.announcement.delete({ where: { id: announcementId } });
   revalidatePath("/announcements");
@@ -199,7 +226,7 @@ function revalidateTransformerPaths() {
 }
 
 export async function createTransformer(formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -220,7 +247,7 @@ export async function updateTransformerReading(
   transformerId: string,
   formData: FormData,
 ) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.transformer.update({
     where: { id: transformerId },
@@ -234,7 +261,7 @@ export async function updateTransformerReading(
 }
 
 export async function deleteTransformer(transformerId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.transformer.delete({ where: { id: transformerId } });
   revalidateTransformerPaths();
@@ -245,7 +272,7 @@ function revalidateProviderPaths() {
 }
 
 export async function createServiceCategory(formData: FormData) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -263,7 +290,7 @@ export async function createServiceCategory(formData: FormData) {
 }
 
 export async function deleteServiceCategory(categoryId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.serviceCategory.delete({ where: { id: categoryId } });
   revalidateProviderPaths();
@@ -273,7 +300,7 @@ export async function createServiceCompany(
   categoryId: string,
   formData: FormData,
 ) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -292,7 +319,7 @@ export async function createServiceCompany(
 }
 
 export async function deleteServiceCompany(companyId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.serviceCompany.delete({ where: { id: companyId } });
   revalidateProviderPaths();
@@ -302,7 +329,7 @@ export async function createServiceContact(
   companyId: string,
   formData: FormData,
 ) {
-  await assertNotViewer();
+  await assertAdmin();
 
   const name = (formData.get("name") ?? "").toString().trim();
   if (!name) {
@@ -321,7 +348,7 @@ export async function createServiceContact(
 }
 
 export async function deleteServiceContact(contactId: string) {
-  await assertNotViewer();
+  await assertAdmin();
 
   await prisma.serviceContact.delete({ where: { id: contactId } });
   revalidateProviderPaths();

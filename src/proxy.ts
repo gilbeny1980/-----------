@@ -1,20 +1,21 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
+const PUBLIC_PATHS = new Set(["/", "/login"]);
+
 export function proxy(request: NextRequest) {
-  const url = request.nextUrl;
-  if (!url.searchParams.has("view")) {
+  const { pathname } = request.nextUrl;
+
+  if (PUBLIC_PATHS.has(pathname)) {
     return NextResponse.next();
   }
 
-  url.searchParams.delete("view");
-  const response = NextResponse.redirect(url);
-  response.cookies.set("role", "viewer", {
-    maxAge: 60 * 60 * 24 * 365,
-    httpOnly: true,
-    sameSite: "lax",
-  });
-  return response;
+  const isAdmin = request.cookies.get("role")?.value === "admin";
+  if (!isAdmin) {
+    return NextResponse.redirect(new URL("/login", request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

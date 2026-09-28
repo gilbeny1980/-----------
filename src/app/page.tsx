@@ -3,10 +3,10 @@ import {
   PROJECT_STATUS_BADGE_CLASSES,
   PROJECT_STATUS_LABELS,
   getPowerParts,
-  formatRelativeTime,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
+import { UpdatesTicker } from "./UpdatesTicker";
 
 export const dynamic = "force-dynamic";
 
@@ -177,23 +177,7 @@ export default async function DisplayPage() {
           <h2 className="mb-3 flex items-center gap-2 text-lg font-bold text-blue-300">
             <span>🕒</span> עדכונים אחרונים
           </h2>
-          <div className="flex-1 space-y-2 overflow-y-auto">
-            {feedItems.length === 0 ? (
-              <p className="text-sm text-slate-400">אין עדכונים עדיין</p>
-            ) : (
-              feedItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="border-b border-slate-800 pb-2 text-sm last:border-0"
-                >
-                  <div>{item.message}</div>
-                  <div className="text-xs text-slate-500">
-                    {formatRelativeTime(item.createdAt)}
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
+          <UpdatesTicker items={feedItems} />
         </section>
       </div>
     </div>

@@ -1,14 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { deleteAnnouncement } from "@/app/actions";
-import { isViewer } from "@/lib/role";
 import { formatDateTime } from "@/lib/labels";
 import { AddAnnouncementForm } from "./AddAnnouncementForm";
 
 export default async function AnnouncementsPage() {
-  const [announcements, viewer] = await Promise.all([
-    prisma.announcement.findMany({ orderBy: { createdAt: "desc" } }),
-    isViewer(),
-  ]);
+  const announcements = await prisma.announcement.findMany({
+    orderBy: { createdAt: "desc" },
+  });
 
   return (
     <div className="mx-auto max-w-2xl w-full px-4 py-6 space-y-6">
@@ -17,7 +15,7 @@ export default async function AnnouncementsPage() {
         הודעות אלו מוצגות יחד עם ימי הולדת ב&quot;עדכונים אחרונים&quot; במסך התצוגה.
       </p>
 
-      {!viewer && <AddAnnouncementForm />}
+      <AddAnnouncementForm />
 
       <div className="rounded-lg border border-slate-200 bg-white shadow-sm divide-y divide-slate-100">
         {announcements.length === 0 ? (
@@ -31,16 +29,14 @@ export default async function AnnouncementsPage() {
                   {formatDateTime(a.createdAt)}
                 </p>
               </div>
-              {!viewer && (
-                <form action={deleteAnnouncement.bind(null, a.id)}>
-                  <button
-                    type="submit"
-                    className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
-                  >
-                    מחיקה
-                  </button>
-                </form>
-              )}
+              <form action={deleteAnnouncement.bind(null, a.id)}>
+                <button
+                  type="submit"
+                  className="rounded-md border border-red-300 px-3 py-1.5 text-sm text-red-700 hover:bg-red-50"
+                >
+                  מחיקה
+                </button>
+              </form>
             </div>
           ))
         )}

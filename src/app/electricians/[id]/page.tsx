@@ -5,7 +5,6 @@ import {
   toggleElectricianActive,
   updateElectrician,
 } from "@/app/actions";
-import { isViewer } from "@/lib/role";
 import { formatDateTime } from "@/lib/labels";
 
 export default async function ElectricianDetailPage({
@@ -15,10 +14,7 @@ export default async function ElectricianDetailPage({
 }) {
   const { id } = await params;
 
-  const [electrician, viewer] = await Promise.all([
-    prisma.electrician.findUnique({ where: { id } }),
-    isViewer(),
-  ]);
+  const electrician = await prisma.electrician.findUnique({ where: { id } });
 
   if (!electrician) {
     notFound();
@@ -54,7 +50,6 @@ export default async function ElectricianDetailPage({
             required
             className="input"
             defaultValue={electrician.name}
-            disabled={viewer}
           />
         </label>
 
@@ -67,7 +62,6 @@ export default async function ElectricianDetailPage({
             dir="ltr"
             className="input"
             defaultValue={electrician.phone ?? ""}
-            disabled={viewer}
           />
         </label>
 
@@ -84,41 +78,34 @@ export default async function ElectricianDetailPage({
                 ? electrician.birthDate.toISOString().slice(0, 10)
                 : ""
             }
-            disabled={viewer}
           />
         </label>
 
-        {!viewer && (
-          <button
-            type="submit"
-            className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
-          >
-            שמירת שינויים
-          </button>
-        )}
+        <button
+          type="submit"
+          className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
+        >
+          שמירת שינויים
+        </button>
       </form>
 
-      {!viewer && (
-        <form action={toggleActiveWithId}>
-          <button
-            type="submit"
-            className="w-full rounded-md border border-slate-300 px-4 py-2 font-medium hover:bg-slate-50"
-          >
-            {electrician.active ? "השבתה" : "הפעלה"}
-          </button>
-        </form>
-      )}
+      <form action={toggleActiveWithId}>
+        <button
+          type="submit"
+          className="w-full rounded-md border border-slate-300 px-4 py-2 font-medium hover:bg-slate-50"
+        >
+          {electrician.active ? "השבתה" : "הפעלה"}
+        </button>
+      </form>
 
-      {!viewer && (
-        <form action={deleteElectricianWithId}>
-          <button
-            type="submit"
-            className="w-full rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
-          >
-            מחיקת חשמלאי
-          </button>
-        </form>
-      )}
+      <form action={deleteElectricianWithId}>
+        <button
+          type="submit"
+          className="w-full rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
+        >
+          מחיקת חשמלאי
+        </button>
+      </form>
     </div>
   );
 }

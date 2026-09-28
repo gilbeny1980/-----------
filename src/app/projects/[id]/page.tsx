@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { addProjectComment, deleteProject, updateProject } from "@/app/actions";
 import { CommentForm } from "@/app/CommentForm";
-import { isViewer } from "@/lib/role";
 import {
   PROJECT_STATUS_LABELS,
   PROJECT_STATUS_ORDER,
@@ -16,13 +15,10 @@ export default async function ProjectDetailPage({
 }) {
   const { id } = await params;
 
-  const [project, viewer] = await Promise.all([
-    prisma.project.findUnique({
-      where: { id },
-      include: { comments: { orderBy: { createdAt: "desc" } } },
-    }),
-    isViewer(),
-  ]);
+  const project = await prisma.project.findUnique({
+    where: { id },
+    include: { comments: { orderBy: { createdAt: "desc" } } },
+  });
 
   if (!project) {
     notFound();
@@ -54,7 +50,6 @@ export default async function ProjectDetailPage({
             required
             className="input"
             defaultValue={project.name}
-            disabled={viewer}
           />
         </label>
 
@@ -66,7 +61,6 @@ export default async function ProjectDetailPage({
             name="description"
             className="input"
             defaultValue={project.description ?? ""}
-            disabled={viewer}
           />
         </label>
 
@@ -74,12 +68,7 @@ export default async function ProjectDetailPage({
           <span className="mb-1 block text-sm font-medium text-slate-700">
             סטטוס
           </span>
-          <select
-            name="status"
-            className="input"
-            defaultValue={project.status}
-            disabled={viewer}
-          >
+          <select name="status" className="input" defaultValue={project.status}>
             {PROJECT_STATUS_ORDER.map((s) => (
               <option key={s} value={s}>
                 {PROJECT_STATUS_LABELS[s]}
@@ -88,19 +77,17 @@ export default async function ProjectDetailPage({
           </select>
         </label>
 
-        {!viewer && (
-          <button
-            type="submit"
-            className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
-          >
-            שמירת שינויים
-          </button>
-        )}
+        <button
+          type="submit"
+          className="w-full rounded-md bg-slate-900 px-4 py-2 font-medium text-white hover:bg-slate-800"
+        >
+          שמירת שינויים
+        </button>
       </form>
 
       <div className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="mb-3 font-bold">הערות</h2>
-        {!viewer && <CommentForm action={addCommentWithId} />}
+        <CommentForm action={addCommentWithId} />
         {project.comments.length === 0 ? (
           <p className="text-sm text-slate-400">אין הערות עדיין</p>
         ) : (
@@ -117,16 +104,14 @@ export default async function ProjectDetailPage({
         )}
       </div>
 
-      {!viewer && (
-        <form action={deleteProjectWithId}>
-          <button
-            type="submit"
-            className="w-full rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
-          >
-            מחיקת פרויקט
-          </button>
-        </form>
-      )}
+      <form action={deleteProjectWithId}>
+        <button
+          type="submit"
+          className="w-full rounded-md border border-red-300 px-4 py-2 font-medium text-red-700 hover:bg-red-50"
+        >
+          מחיקת פרויקט
+        </button>
+      </form>
     </div>
   );
 }
