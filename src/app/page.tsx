@@ -84,7 +84,7 @@ export default async function DisplayPage() {
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
       <meta httpEquiv="refresh" content="60" />
 
-      <div className="flex flex-col gap-4 border-b border-slate-800 px-6 py-5 sm:flex-row sm:flex-wrap sm:items-center">
+      <div className="relative flex flex-col gap-4 border-b border-slate-800 px-6 py-5 sm:flex-row sm:flex-wrap sm:items-center sm:pl-32">
         <div className="sm:shrink-0">
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
@@ -101,7 +101,7 @@ export default async function DisplayPage() {
           </div>
         </div>
         <UpdatesTicker items={feedItems} />
-        <div className="sm:shrink-0">
+        <div className="sm:absolute sm:left-6 sm:top-5">
           <ClientClock />
         </div>
       </div>
