@@ -1,4 +1,5 @@
 import { prisma } from "../src/lib/prisma";
+import electricalRoomsSeed from "./electrical-rooms-seed.json";
 
 async function main() {
   const electricianCount = await prisma.electrician.count();
@@ -53,6 +54,27 @@ async function main() {
         },
       },
     });
+  }
+
+  const roomCount = await prisma.electricalRoom.count();
+  if (roomCount === 0) {
+    for (const r of electricalRoomsSeed as Array<{
+      panel: number;
+      room: string;
+      location: string;
+      area: string;
+      qr: string;
+    }>) {
+      await prisma.electricalRoom.create({
+        data: {
+          panel: r.panel,
+          name: r.room,
+          location: r.location,
+          area: r.area,
+          qrCode: r.qr,
+        },
+      });
+    }
   }
 }
 

@@ -27,6 +27,13 @@ export function NavMenu({ admin }: { admin: boolean }) {
             onClick={() => setIsOpen(false)}
           />
           <div className="absolute left-0 z-50 mt-2 w-48 overflow-hidden rounded-lg border border-slate-700 bg-slate-900 text-sm shadow-xl">
+            <Link
+              href="/room-entry"
+              className="block border-b border-slate-700 px-4 py-2 hover:bg-slate-800"
+              onClick={() => setIsOpen(false)}
+            >
+              📷 כניסה לחדר חשמל
+            </Link>
             {admin ? (
               <>
                 <Link
@@ -70,6 +77,13 @@ export function NavMenu({ admin }: { admin: boolean }) {
                   onClick={() => setIsOpen(false)}
                 >
                   משימות
+                </Link>
+                <Link
+                  href="/room-entries"
+                  className="block px-4 py-2 hover:bg-slate-800"
+                  onClick={() => setIsOpen(false)}
+                >
+                  כניסות לחדרי חשמל
                 </Link>
                 <Link
                   href="/admin-users"

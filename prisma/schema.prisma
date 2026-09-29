@@ -129,3 +129,26 @@ model ServiceContact {
 
   @@index([companyId])
 }
+
+model ElectricalRoom {
+  id       String  @id @default(cuid())
+  panel    Int?
+  name     String
+  location String?
+  area     String?
+  qrCode   String  @unique
+
+  entries RoomEntry[]
+}
+
+model RoomEntry {
+  id        String   @id @default(cuid())
+  phone     String
+  enteredAt DateTime @default(now())
+
+  roomId String
+  room   ElectricalRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+
+  @@index([roomId])
+  @@index([enteredAt])
+}

@@ -522,3 +522,29 @@ export async function deleteServiceContact(contactId: string) {
   await prisma.serviceContact.delete({ where: { id: contactId } });
   revalidateProviderPaths();
 }
+
+export type RoomEntryState = { error?: string; success?: string };
+
+export async function logRoomEntry(
+  _prevState: RoomEntryState,
+  formData: FormData,
+): Promise<RoomEntryState> {
+  const qrCode = (formData.get("qrCode") ?? "").toString().trim();
+  const phone = (formData.get("phone") ?? "").toString().trim();
+
+  if (!qrCode) {
+    return { error: "קוד QR לא תקין" };
+  }
+  if (!phone) {
+    return { error: "יש להזין מספר טלפון" };
+  }
+
+  const room = await prisma.electricalRoom.findUnique({ where: { qrCode } });
+  if (!room) {
+    return { error: "חדר חשמל לא נמצא במערכת" };
+  }
+
+  await prisma.roomEntry.create({ data: { roomId: room.id, phone } });
+
+  return { success: `נרשמה כניסה ל${room.name}` };
+}
