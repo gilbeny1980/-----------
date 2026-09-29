@@ -11,14 +11,14 @@ export function UpdatesTicker({ items }: { items: FeedItem[] }) {
     items.map((item) => (
       <div
         key={`${keyPrefix}-${item.id}`}
-        className="flex h-7 items-center justify-center truncate px-2 text-sm font-medium text-blue-200"
+        className="flex h-12 items-center justify-center truncate px-2 text-3xl font-bold text-blue-200"
       >
         {item.message}
       </div>
     ));
 
   return (
-    <div className="relative h-7 w-full shrink-0 overflow-hidden sm:w-72">
+    <div className="relative h-12 w-full shrink-0 overflow-hidden sm:w-96">
       <div
         className="ticker-track-vertical"
         style={{ animationDuration: `${durationSeconds}s` }}
