@@ -5,6 +5,7 @@ import {
   PROJECT_STATUS_LABELS,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
+import { OpenFaultsPanel } from "./OpenFaultsPanel";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
 import { UpdatesTicker } from "./UpdatesTicker";
 import { WorkOrdersPanel } from "./WorkOrdersPanel";
@@ -109,6 +110,8 @@ export default async function DisplayPage() {
           <ClientClock />
         </div>
       </div>
+
+      <OpenFaultsPanel />
 
       {birthdayElectricians.length > 0 && (
         <div className="mx-4 mt-4 rounded-xl border border-pink-800 bg-pink-950/40 px-4 py-3 text-center">
