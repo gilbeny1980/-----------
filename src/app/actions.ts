@@ -391,7 +391,7 @@ export async function deleteAnnouncement(announcementId: string) {
 
 function revalidateTransformerPaths() {
   revalidatePath("/transformers");
-  revalidatePath("/");
+  revalidatePath("/transformers-status");
 }
 
 export async function createTransformer(formData: FormData) {
@@ -553,4 +553,26 @@ export async function logRoomEntry(
   });
 
   return { success: `נרשמה כניסה ל${room.name}` };
+}
+
+export async function updateRoomEntry(entryId: string, formData: FormData) {
+  await assertAdmin();
+
+  const phone = (formData.get("phone") ?? "").toString().trim();
+  const roomClean = formData.get("roomClean") === "on";
+  const acWorking = formData.get("acWorking") === "on";
+  const notes = (formData.get("notes") ?? "").toString().trim() || null;
+
+  await prisma.roomEntry.update({
+    where: { id: entryId },
+    data: { phone, roomClean, acWorking, notes },
+  });
+
+  revalidatePath("/room-entries/manage");
+}
+
+export async function deleteRoomEntry(entryId: string) {
+  await assertAdmin();
+  await prisma.roomEntry.delete({ where: { id: entryId } });
+  revalidatePath("/room-entries/manage");
 }

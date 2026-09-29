@@ -3,7 +3,6 @@ import { prisma } from "@/lib/prisma";
 import {
   PROJECT_STATUS_BADGE_CLASSES,
   PROJECT_STATUS_LABELS,
-  getPowerParts,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
@@ -26,7 +25,6 @@ export default async function DisplayPage() {
     projects,
     announcements,
     electricians,
-    transformers,
     serviceCategories,
     workOrders,
     workOrdersTitle,
@@ -42,7 +40,6 @@ export default async function DisplayPage() {
     prisma.electrician.findMany({
       where: { active: true, birthDate: { not: null } },
     }),
-    prisma.transformer.findMany({ orderBy: { order: "asc" } }),
     prisma.serviceCategory.findMany({
       orderBy: { order: "asc" },
       include: {
@@ -75,12 +72,6 @@ export default async function DisplayPage() {
     .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
     .slice(0, 15);
 
-  const totalPowerKw = transformers.reduce(
-    (sum, t) => sum + (t.activePowerKw ?? 0),
-    0,
-  );
-  const totalPowerParts = getPowerParts(totalPowerKw);
-
   return (
     <div className="flex-1 flex flex-col bg-slate-950 text-white">
       <meta httpEquiv="refresh" content="60" />
@@ -100,9 +91,15 @@ export default async function DisplayPage() {
             </a>
             <Link
               href="/room-entry"
+              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
+            >
+              כניסה לחדר חשמל
+            </Link>
+            <Link
+              href="/transformers-status"
               className="flex items-center gap-1.5 rounded-full border border-emerald-700 bg-emerald-950/60 px-3 py-1 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-900"
             >
-              <span>📷</span> כניסה לחדר חשמל
+              <span>⚡</span> צריכת שנאים
             </Link>
             <ServiceProviderPicker categories={serviceCategories} />
           </div>
@@ -120,47 +117,6 @@ export default async function DisplayPage() {
             {birthdayElectricians.map((e) => e.name).join(", ")}!
           </span>
         </div>
-      )}
-
-      {transformers.length > 0 && (
-        <section className="mx-4 mt-4 rounded-xl border border-slate-800 bg-slate-900 p-4">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-            <h2 className="flex items-center gap-2 text-lg font-bold text-emerald-300">
-              <span>⚡</span> שנאים - ביקוש הספק ומקדם הספק
-            </h2>
-            <span className="flex items-baseline gap-1.5 rounded-full border border-emerald-800 bg-emerald-950/60 px-3 py-1 text-sm font-bold text-emerald-300">
-              <span>סה&quot;כ:</span>
-              <span className="text-xs font-normal text-emerald-400">
-                {totalPowerParts.unit}
-              </span>
-              <span>{totalPowerParts.value}</span>
-            </span>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
-            {transformers.map((t) => (
-              <div
-                key={t.id}
-                className="rounded-lg border border-slate-800 bg-slate-800/60 p-3 text-center"
-              >
-                <div className="text-sm font-bold text-slate-300">{t.name}</div>
-                <div className="mt-1 flex items-baseline justify-center gap-1">
-                  <span className="text-xs font-normal text-slate-400">kW</span>
-                  <span className="text-xl font-bold text-emerald-300">
-                    {t.activePowerKw !== null
-                      ? Math.round(t.activePowerKw * 10) / 10
-                      : "—"}
-                  </span>
-                </div>
-                <div className="text-xs text-slate-400">
-                  מקדם הספק:{" "}
-                  {t.powerFactor !== null
-                    ? Math.round(t.powerFactor * 100) / 100
-                    : "—"}
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
       )}
 
       <div className="grid flex-1 grid-cols-1 gap-4 p-4 lg:grid-cols-2">
