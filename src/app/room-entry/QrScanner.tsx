@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
 import { logRoomEntry, type RoomEntryState } from "@/app/actions";
 
@@ -8,19 +8,18 @@ const SCANNER_ELEMENT_ID = "qr-scanner-region";
 const initialState: RoomEntryState = {};
 
 export function QrScanner() {
+  const [phase, setPhase] = useState<"idle" | "scanning" | "scanned">("idle");
   const [scannedCode, setScannedCode] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
-  const scannerRef = useRef<Html5Qrcode | null>(null);
   const [state, formAction, isPending] = useActionState(
     logRoomEntry,
     initialState,
   );
 
   useEffect(() => {
-    if (scannedCode) return;
+    if (phase !== "scanning") return;
 
     const scanner = new Html5Qrcode(SCANNER_ELEMENT_ID);
-    scannerRef.current = scanner;
     let stopped = false;
 
     scanner
@@ -31,12 +30,14 @@ export function QrScanner() {
           if (!stopped) {
             stopped = true;
             setScannedCode(decodedText);
+            setPhase("scanned");
           }
         },
         () => {},
       )
       .catch(() => {
         setScanError("לא ניתן לגשת למצלמה. יש לאשר הרשאת מצלמה בדפדפן.");
+        setPhase("idle");
       });
 
     return () => {
@@ -49,7 +50,7 @@ export function QrScanner() {
         // scanner never started successfully; nothing to stop
       }
     };
-  }, [scannedCode]);
+  }, [phase]);
 
   if (state.success) {
     return (
@@ -59,6 +60,7 @@ export function QrScanner() {
           type="button"
           onClick={() => {
             setScannedCode(null);
+            setPhase("idle");
             window.location.reload();
           }}
           className="mt-4 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
@@ -69,12 +71,12 @@ export function QrScanner() {
     );
   }
 
-  if (scannedCode) {
+  if (phase === "scanned" && scannedCode) {
     return (
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="qrCode" value={scannedCode} />
         <p className="text-center text-sm text-slate-400">
-          קוד נסרק בהצלחה. יש להזין מספר טלפון לאישור הכניסה.
+          קוד נסרק בהצלחה. יש למלא את הפרטים לאישור הכניסה.
         </p>
         <input
           name="phone"
@@ -84,6 +86,22 @@ export function QrScanner() {
           placeholder="מספר טלפון"
           className="input w-full text-center text-lg"
         />
+        <div className="space-y-2 rounded-lg border border-slate-700 bg-slate-900/60 p-3">
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="roomClean" className="h-4 w-4" />
+            החדר נקי
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="acWorking" className="h-4 w-4" />
+            המזגן עובד
+          </label>
+          <textarea
+            name="notes"
+            placeholder="הערות (לא חובה)"
+            rows={3}
+            className="input w-full resize-none"
+          />
+        </div>
         {state.error && (
           <p className="text-center text-sm text-red-400">{state.error}</p>
         )}
@@ -96,7 +114,10 @@ export function QrScanner() {
         </button>
         <button
           type="button"
-          onClick={() => setScannedCode(null)}
+          onClick={() => {
+            setScannedCode(null);
+            setPhase("idle");
+          }}
           className="w-full text-center text-sm text-slate-500 hover:underline"
         >
           סריקה מחדש
@@ -105,13 +126,40 @@ export function QrScanner() {
     );
   }
 
+  if (phase === "scanning") {
+    return (
+      <div className="space-y-3">
+        <div
+          id={SCANNER_ELEMENT_ID}
+          className="mx-auto w-full max-w-sm overflow-hidden rounded-xl"
+        />
+        <p className="text-center text-sm text-slate-400">
+          כוונו את המצלמה לקוד ה-QR שעל דלת חדר החשמל
+        </p>
+        <button
+          type="button"
+          onClick={() => setPhase("idle")}
+          className="w-full text-center text-sm text-slate-500 hover:underline"
+        >
+          ביטול
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-3">
-      <div id={SCANNER_ELEMENT_ID} className="mx-auto w-full max-w-sm overflow-hidden rounded-xl" />
+      <button
+        type="button"
+        onClick={() => {
+          setScanError(null);
+          setPhase("scanning");
+        }}
+        className="w-full rounded-md bg-emerald-600 px-4 py-3 font-bold text-white hover:bg-emerald-500"
+      >
+        📷 סריקת QR לכניסה
+      </button>
       {scanError && <p className="text-center text-sm text-red-400">{scanError}</p>}
-      <p className="text-center text-sm text-slate-400">
-        כוונו את המצלמה לקוד ה-QR שעל דלת חדר החשמל
-      </p>
     </div>
   );
 }

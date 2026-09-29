@@ -142,9 +142,12 @@ model ElectricalRoom {
 }
 
 model RoomEntry {
-  id        String   @id @default(cuid())
-  phone     String
-  enteredAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  phone      String
+  roomClean  Boolean  @default(false)
+  acWorking  Boolean  @default(false)
+  notes      String?
+  enteredAt  DateTime @default(now())
 
   roomId String
   room   ElectricalRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)

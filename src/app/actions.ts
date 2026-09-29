@@ -544,7 +544,13 @@ export async function logRoomEntry(
     return { error: "חדר חשמל לא נמצא במערכת" };
   }
 
-  await prisma.roomEntry.create({ data: { roomId: room.id, phone } });
+  const roomClean = formData.get("roomClean") === "on";
+  const acWorking = formData.get("acWorking") === "on";
+  const notes = (formData.get("notes") ?? "").toString().trim() || null;
+
+  await prisma.roomEntry.create({
+    data: { roomId: room.id, phone, roomClean, acWorking, notes },
+  });
 
   return { success: `נרשמה כניסה ל${room.name}` };
 }

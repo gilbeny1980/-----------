@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import {
   PROJECT_STATUS_BADGE_CLASSES,
@@ -97,6 +98,12 @@ export default async function DisplayPage() {
             >
               <span>📱</span> מדריך תפעול בטלגרם
             </a>
+            <Link
+              href="/room-entry"
+              className="flex items-center gap-1.5 rounded-full border border-emerald-700 bg-emerald-950/60 px-3 py-1 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-900"
+            >
+              <span>📷</span> כניסה לחדר חשמל
+            </Link>
             <ServiceProviderPicker categories={serviceCategories} />
           </div>
         </div>
