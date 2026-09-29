@@ -6,6 +6,7 @@ const PUBLIC_PATHS = new Set([
   "/login",
   "/room-entry",
   "/transformers-status",
+  "/api/open-faults/sync",
 ]);
 
 export function proxy(request: NextRequest) {

@@ -155,3 +155,10 @@ model RoomEntry {
   @@index([roomId])
   @@index([enteredAt])
 }
+
+model OpenFaultsSnapshot {
+  id        String   @id @default("singleton")
+  count     Int
+  faults    String
+  updatedAt DateTime @updatedAt
+}
