@@ -7,6 +7,7 @@ import { prisma } from "@/lib/prisma";
 import { assertAdmin } from "@/lib/role";
 import { hashPassword, verifyPassword } from "@/lib/password";
 import { ProjectStatus, WorkOrderStatus } from "@/generated/prisma/enums";
+import { filterOpenElectricalFaults, type ServiceCall } from "@/lib/openFaults";
 
 async function setAdminCookie() {
   const cookieStore = await cookies();
@@ -575,4 +576,49 @@ export async function deleteRoomEntry(entryId: string) {
   await assertAdmin();
   await prisma.roomEntry.delete({ where: { id: entryId } });
   revalidatePath("/room-entries/manage");
+}
+
+export type ManualFaultsSyncState = { error?: string; success?: string };
+
+export async function syncOpenFaultsManually(
+  _prevState: ManualFaultsSyncState,
+  formData: FormData,
+): Promise<ManualFaultsSyncState> {
+  await assertAdmin();
+
+  const raw = (formData.get("rawData") ?? "").toString().trim();
+  if (!raw) {
+    return { error: "יש להדביק את הנתונים לפני העדכון" };
+  }
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(raw);
+  } catch {
+    return { error: "הטקסט שהודבק אינו JSON תקין - יש לוודא שהועתק הכל" };
+  }
+
+  if (!Array.isArray(parsed)) {
+    return { error: "הנתונים חייבים להיות רשימה (מערך)" };
+  }
+
+  const openFaults = filterOpenElectricalFaults(parsed as ServiceCall[]);
+
+  await prisma.openFaultsSnapshot.upsert({
+    where: { id: "singleton" },
+    create: {
+      id: "singleton",
+      count: openFaults.length,
+      faults: JSON.stringify(openFaults),
+    },
+    update: {
+      count: openFaults.length,
+      faults: JSON.stringify(openFaults),
+    },
+  });
+
+  revalidatePath("/");
+  revalidatePath("/open-faults/manual-sync");
+
+  return { success: `עודכן בהצלחה - ${openFaults.length} תקלות פתוחות` };
 }

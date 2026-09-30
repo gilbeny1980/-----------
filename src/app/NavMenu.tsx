@@ -86,6 +86,13 @@ export function NavMenu({ admin }: { admin: boolean }) {
                   ניהול חדרי חשמל
                 </Link>
                 <Link
+                  href="/open-faults/manual-sync"
+                  className="block px-4 py-2 hover:bg-slate-800"
+                  onClick={() => setIsOpen(false)}
+                >
+                  עדכון תקלות פתוחות
+                </Link>
+                <Link
                   href="/admin-users"
                   className="block px-4 py-2 hover:bg-slate-800"
                   onClick={() => setIsOpen(false)}
