@@ -25,9 +25,9 @@ export function ServiceProviderPicker({ categories }: { categories: Category[] }
       <button
         type="button"
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 rounded-full border border-violet-700 bg-violet-950/60 px-3 py-1 text-sm font-medium text-violet-300 transition-colors hover:bg-violet-900"
+        className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
       >
-        <span>🛠️</span> נותני שירות
+        נותני שירות
       </button>
 
       {isOpen && (

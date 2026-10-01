@@ -86,9 +86,9 @@ export default async function DisplayPage() {
               href="https://t.me/Galam_Electrical_Bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 rounded-full border border-sky-700 bg-sky-950/60 px-3 py-1 text-sm font-medium text-sky-300 transition-colors hover:bg-sky-900"
+              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
             >
-              <span>📱</span> מדריך תפעול בטלגרם
+              מדריך תפעול בטלגרם
             </a>
             <Link
               href="/room-entry"
@@ -98,9 +98,9 @@ export default async function DisplayPage() {
             </Link>
             <Link
               href="/transformers-status"
-              className="flex items-center gap-1.5 rounded-full border border-emerald-700 bg-emerald-950/60 px-3 py-1 text-sm font-medium text-emerald-300 transition-colors hover:bg-emerald-900"
+              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
             >
-              <span>⚡</span> צריכת שנאים
+              צריכת שנאים
             </Link>
             <ServiceProviderPicker categories={serviceCategories} />
           </div>
