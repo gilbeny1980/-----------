@@ -11,7 +11,7 @@ export function UpdatesTicker({ items }: { items: FeedItem[] }) {
     items.map((item) => (
       <div
         key={`${keyPrefix}-${item.id}`}
-        className="flex h-12 items-center justify-center truncate px-2 mb-6 text-3xl font-bold text-blue-200"
+        className="flex h-12 items-center justify-center truncate px-2 mb-6 text-base font-bold text-blue-200"
       >
         {item.message}
       </div>
