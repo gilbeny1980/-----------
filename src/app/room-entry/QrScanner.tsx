@@ -19,13 +19,24 @@ export function QrScanner() {
   useEffect(() => {
     if (phase !== "scanning") return;
 
-    const scanner = new Html5Qrcode(SCANNER_ELEMENT_ID);
+    const scanner = new Html5Qrcode(SCANNER_ELEMENT_ID, {
+      useBarCodeDetectorIfSupported: true,
+      verbose: false,
+    });
     let stopped = false;
 
     scanner
       .start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        {
+          fps: 10,
+          qrbox: { width: 250, height: 250 },
+          videoConstraints: {
+            facingMode: "environment",
+            width: { ideal: 1920 },
+            height: { ideal: 1080 },
+          },
+        },
         (decodedText) => {
           if (!stopped) {
             stopped = true;
