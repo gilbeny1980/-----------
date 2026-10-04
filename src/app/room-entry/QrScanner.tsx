@@ -35,7 +35,8 @@ export function QrScanner() {
             facingMode: "environment",
             width: { ideal: 1920 },
             height: { ideal: 1080 },
-          },
+            advanced: [{ focusMode: "continuous" }],
+          } as unknown as MediaTrackConstraints,
         },
         (decodedText) => {
           if (!stopped) {
