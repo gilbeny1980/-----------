@@ -43,12 +43,15 @@ export function getPowerParts(kw: number): { value: string; unit: string } {
   return { value: String(Math.round(kw * 10) / 10), unit: "kW" };
 }
 
+const ISRAEL_TIME_ZONE = "Asia/Jerusalem";
+
 export function formatDate(date: Date | string | null | undefined): string {
   if (!date) return "";
   return new Intl.DateTimeFormat("he-IL", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
+    timeZone: ISRAEL_TIME_ZONE,
   }).format(new Date(date));
 }
 
@@ -75,5 +78,6 @@ export function formatDateTime(date: Date | string | null | undefined): string {
     year: "numeric",
     hour: "2-digit",
     minute: "2-digit",
+    timeZone: ISRAEL_TIME_ZONE,
   }).format(new Date(date));
 }
