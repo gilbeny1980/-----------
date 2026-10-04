@@ -19,8 +19,14 @@ export function QrScanner() {
   useEffect(() => {
     if (phase !== "scanning") return;
 
+    // The native browser BarcodeDetector API (used when
+    // useBarCodeDetectorIfSupported is true) varies a lot in quality across
+    // Android vendors and can perform worse than the bundled JS decoder on
+    // real-world photos (skewed angle, printed paper). Safari doesn't
+    // support it at all, so iOS always uses the JS decoder - keeping both
+    // platforms on the same decoder avoids this inconsistency.
     const scanner = new Html5Qrcode(SCANNER_ELEMENT_ID, {
-      useBarCodeDetectorIfSupported: true,
+      useBarCodeDetectorIfSupported: false,
       verbose: false,
     });
     let stopped = false;
