@@ -24,36 +24,72 @@ export function QrScanner() {
       verbose: false,
     });
     let stopped = false;
+    let cancelled = false;
 
-    scanner
-      .start(
-        { facingMode: "environment" },
-        {
-          fps: 10,
-          qrbox: { width: 250, height: 250 },
-          videoConstraints: {
-            facingMode: "environment",
-            width: { ideal: 1920 },
-            height: { ideal: 1080 },
-            advanced: [{ focusMode: "continuous" }],
-          } as unknown as MediaTrackConstraints,
-        },
-        (decodedText) => {
-          if (!stopped) {
-            stopped = true;
-            setScannedCode(decodedText);
-            setPhase("scanned");
-          }
-        },
-        () => {},
-      )
-      .catch(() => {
+    const onDecoded = (decodedText: string) => {
+      if (!stopped) {
+        stopped = true;
+        setScannedCode(decodedText);
+        setPhase("scanned");
+      }
+    };
+
+    const baseVideoConstraints = {
+      facingMode: "environment",
+      width: { ideal: 1920 },
+      height: { ideal: 1080 },
+    };
+
+    // Try the best config first (higher resolution + continuous autofocus),
+    // then fall back to progressively simpler ones - some browsers (notably
+    // some Android/Chrome camera stacks) reject the whole camera request if
+    // an "advanced" constraint isn't recognized, instead of ignoring it.
+    const attempts = [
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        videoConstraints: {
+          ...baseVideoConstraints,
+          advanced: [{ focusMode: "continuous" }],
+        } as unknown as MediaTrackConstraints,
+      },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+        videoConstraints: baseVideoConstraints,
+      },
+      {
+        fps: 10,
+        qrbox: { width: 250, height: 250 },
+      },
+    ];
+
+    async function startWithFallback() {
+      for (const config of attempts) {
+        if (cancelled) return;
+        try {
+          await scanner.start(
+            { facingMode: "environment" },
+            config,
+            onDecoded,
+            () => {},
+          );
+          return;
+        } catch {
+          // try the next, simpler config
+        }
+      }
+      if (!cancelled) {
         setScanError("לא ניתן לגשת למצלמה. יש לאשר הרשאת מצלמה בדפדפן.");
         setPhase("idle");
-      });
+      }
+    }
+
+    startWithFallback();
 
     return () => {
       stopped = true;
+      cancelled = true;
       try {
         if (scanner.getState() === Html5QrcodeScannerState.SCANNING) {
           scanner.stop().catch(() => {});
