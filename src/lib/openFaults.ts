@@ -12,7 +12,7 @@ export type ServiceCall = {
 
 function isElectricalCall(item: ServiceCall): boolean {
   const code = (item.CallTypeCode ?? "").trim();
-  return code.includes("חשמל") && code.includes("מכשור");
+  return code === "3-חשמל/מכשור";
 }
 
 function isOpenCall(item: ServiceCall): boolean {

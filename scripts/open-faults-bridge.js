@@ -23,7 +23,7 @@ if (!secret) {
 // calls here, before sending, so the payload stays small.
 function isElectricalCall(item) {
   const code = (item.CallTypeCode ?? "").trim();
-  return code.includes("חשמל") && code.includes("מכשור");
+  return code === "3-חשמל/מכשור";
 }
 
 async function syncOnce() {
