@@ -8,6 +8,7 @@ export type ServiceCall = {
   PARTNAME?: string;
   PARTDES?: string;
   CODE?: string;
+  ParentPartDescription?: string;
 };
 
 function isElectricalCall(item: ServiceCall): boolean {
