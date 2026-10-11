@@ -46,9 +46,10 @@ export async function OpenFaultsSection() {
                   >
                     <div className="flex flex-wrap items-center justify-between gap-2">
                       <span className="font-bold text-slate-200">{f.PARTNAME}</span>
-                      <span className="text-xs text-slate-500" dir="ltr">
-                        {f.DOCNO}
-                      </span>
+                      <div className="flex items-center gap-2 text-xs text-slate-500">
+                        {f.ConvertedDate && <span dir="ltr">{f.ConvertedDate}</span>}
+                        <span dir="ltr">{f.DOCNO}</span>
+                      </div>
                     </div>
                     {f.PARTDES && (
                       <div className="text-xs text-slate-400">{f.PARTDES}</div>
