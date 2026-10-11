@@ -9,6 +9,7 @@ export type ServiceCall = {
   PARTDES?: string;
   CODE?: string;
   ConvertedDate?: string;
+  ParentPartDescription?: string;
 };
 
 function isElectricalCall(item: ServiceCall): boolean {
