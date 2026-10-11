@@ -1,14 +1,14 @@
 // Runs on a computer inside the kibbutz's local network (which can reach
-// 10.1.61.15). Fetches today's service calls from the internal system and
-// forwards them to the public site, which filters and stores the open
-// electrical faults and displays them on the main screen.
+// 10.1.61.15). Fetches service calls from the internal system and forwards
+// them to the public site, which filters and stores the open electrical
+// faults and displays them on the main screen.
 //
 // Requires Node.js 18+ (built-in fetch). Run with:
 //   node --env-file=.env open-faults-bridge.js
 // where .env (next to this file, not committed to git) contains:
 //   OPEN_FAULTS_SYNC_SECRET=<the secret value>
 
-const SOURCE_URL = "http://10.1.61.15:8084/todayservcalls";
+const SOURCE_URL = "http://10.1.61.15:8084/servcalls";
 const TARGET_URL = "https://gilam-electric.vercel.app/api/open-faults/sync";
 const INTERVAL_MS = 60_000;
 

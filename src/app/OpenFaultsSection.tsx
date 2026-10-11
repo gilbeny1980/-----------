@@ -53,6 +53,13 @@ export async function OpenFaultsSection() {
                     {f.PARTDES && (
                       <div className="text-xs text-slate-400">{f.PARTDES}</div>
                     )}
+                    {f.CODE && (
+                      <div className="mt-1">
+                        <span className="rounded-full border border-amber-700 bg-amber-950/60 px-2 py-0.5 text-xs text-amber-300">
+                          {f.CODE}
+                        </span>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
