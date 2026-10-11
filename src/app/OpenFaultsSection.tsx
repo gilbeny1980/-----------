@@ -55,6 +55,7 @@ export async function OpenFaultsSection() {
                     )}
                     {f.ParentPartDescription && (
                       <div className="text-xs text-slate-300">
+                        <span className="text-slate-500">תיאור התקלה: </span>
                         {f.ParentPartDescription}
                       </div>
                     )}
