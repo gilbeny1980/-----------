@@ -9,6 +9,7 @@ export type ServiceCall = {
   PARTDES?: string;
   CODE?: string;
   ParentPartDescription?: string;
+  ConvertedDate?: string;
 };
 
 function isElectricalCall(item: ServiceCall): boolean {
@@ -23,8 +24,28 @@ function isOpenCall(item: ServiceCall): boolean {
   return final === "" && cancel === "" && code === "לביצוע";
 }
 
+// ConvertedDate's exact format isn't guaranteed, so try ISO first and fall
+// back to DD/MM/YYYY (same layout as CURDATE) - plain `new Date()` would
+// otherwise misread a DD/MM/YYYY string as MM/DD/YYYY.
+function parseConvertedDate(value: string | undefined): number {
+  if (!value) return 0;
+  const iso = Date.parse(value);
+  if (!Number.isNaN(iso)) return iso;
+  const match = value.trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})/);
+  if (match) {
+    const [, day, month, year] = match;
+    return new Date(Number(year), Number(month) - 1, Number(day)).getTime();
+  }
+  return 0;
+}
+
 export function filterOpenElectricalFaults(items: ServiceCall[]): ServiceCall[] {
-  return items.filter((item) => isElectricalCall(item) && isOpenCall(item));
+  return items
+    .filter((item) => isElectricalCall(item) && isOpenCall(item))
+    .sort(
+      (a, b) =>
+        parseConvertedDate(a.ConvertedDate) - parseConvertedDate(b.ConvertedDate),
+    );
 }
 
 const STALE_AFTER_MS = 20 * 60 * 1000;
