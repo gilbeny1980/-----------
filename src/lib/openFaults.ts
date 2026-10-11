@@ -18,7 +18,8 @@ function isElectricalCall(item: ServiceCall): boolean {
 function isOpenCall(item: ServiceCall): boolean {
   const final = (item.FINAL ?? "").trim();
   const cancel = (item.CANCEL ?? "").trim();
-  return final === "" && cancel === "";
+  const code = (item.CODE ?? "").trim();
+  return final === "" && cancel === "" && code === "לביצוע";
 }
 
 export function filterOpenElectricalFaults(items: ServiceCall[]): ServiceCall[] {
