@@ -8,7 +8,6 @@ export type ServiceCall = {
   PARTNAME?: string;
   PARTDES?: string;
   CODE?: string;
-  ParentPartDescription?: string;
   ConvertedDate?: string;
 };
 

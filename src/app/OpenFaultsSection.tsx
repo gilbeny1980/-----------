@@ -52,12 +52,9 @@ export async function OpenFaultsSection() {
                       </div>
                     </div>
                     {f.PARTDES && (
-                      <div className="text-xs text-slate-400">{f.PARTDES}</div>
-                    )}
-                    {f.ParentPartDescription && (
                       <div className="text-xs text-slate-300">
                         <span className="text-slate-500">תיאור התקלה: </span>
-                        {f.ParentPartDescription}
+                        {f.PARTDES}
                       </div>
                     )}
                     {f.CODE && (
