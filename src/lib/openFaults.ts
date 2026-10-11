@@ -25,7 +25,7 @@ export function filterOpenElectricalFaults(items: ServiceCall[]): ServiceCall[] 
   return items.filter((item) => isElectricalCall(item) && isOpenCall(item));
 }
 
-const STALE_AFTER_MS = 5 * 60 * 1000;
+const STALE_AFTER_MS = 20 * 60 * 1000;
 
 export function isSnapshotStale(updatedAt: Date): boolean {
   return Date.now() - updatedAt.getTime() > STALE_AFTER_MS;
