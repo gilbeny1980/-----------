@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Heebo } from "next/font/google";
 import Link from "next/link";
 import { isAdmin } from "@/lib/role";
@@ -13,6 +13,15 @@ const heebo = Heebo({
 export const metadata: Metadata = {
   title: "מחלקת חשמל - גלעם",
   description: "מערכת לניהול פרויקטים ועדכונים עבור מחלקת החשמל בגלעם",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "חשמל גלעם",
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0f172a",
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

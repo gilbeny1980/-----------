@@ -7,6 +7,11 @@ const PUBLIC_PATHS = new Set([
   "/room-entry",
   "/transformers-status",
   "/api/open-faults/sync",
+  "/manifest.webmanifest",
+  "/icon.png",
+  "/apple-icon.png",
+  "/icon-192.png",
+  "/icon-512.png",
 ]);
 
 export function proxy(request: NextRequest) {
