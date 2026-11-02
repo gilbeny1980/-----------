@@ -6,6 +6,25 @@ type Contact = { id: string; name: string; role: string | null; phone: string | 
 type Company = { id: string; name: string; contacts: Contact[] };
 type Category = { id: string; name: string; companies: Company[] };
 
+const CATEGORY_ICONS: [RegExp, string][] = [
+  [/חשמל/, "⚡"],
+  [/מים|אינסטל|ברז|צנרת/, "💧"],
+  [/מיזוג|מזגן/, "❄️"],
+  [/דלת|מנעול/, "🚪"],
+  [/נגר|רהיט/, "🔨"],
+  [/מעלית/, "🛗"],
+  [/ניקיון/, "🧹"],
+  [/גינ/, "🌳"],
+];
+
+function iconForCategory(name: string): string {
+  const match = CATEGORY_ICONS.find(([pattern]) => pattern.test(name));
+  return match ? match[1] : "🔧";
+}
+
+const cardClass =
+  "flex flex-col items-center justify-center gap-2 rounded-xl border-2 border-slate-700 bg-slate-800 px-4 py-5 text-center transition-colors hover:border-blue-500 hover:bg-slate-800/80";
+
 export function ServiceProviderPicker({ categories }: { categories: Category[] }) {
   const [isOpen, setIsOpen] = useState(false);
   const [categoryId, setCategoryId] = useState<string | null>(null);
@@ -51,27 +70,30 @@ export function ServiceProviderPicker({ categories }: { categories: Category[] }
             </div>
 
             {!category && (
-              <div className="space-y-2">
-                <p className="text-sm text-slate-400">בחר תחום:</p>
+              <div>
+                <p className="mb-3 text-sm text-slate-400">בחר תחום:</p>
                 {categories.length === 0 ? (
                   <p className="text-sm text-slate-500">אין תחומים רשומים</p>
                 ) : (
-                  categories.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => setCategoryId(c.id)}
-                      className="block w-full rounded-lg bg-slate-800 px-4 py-2 text-right hover:bg-slate-700"
-                    >
-                      {c.name}
-                    </button>
-                  ))
+                  <div className="grid grid-cols-2 gap-3">
+                    {categories.map((c) => (
+                      <button
+                        key={c.id}
+                        type="button"
+                        onClick={() => setCategoryId(c.id)}
+                        className={cardClass}
+                      >
+                        <span className="text-3xl">{iconForCategory(c.name)}</span>
+                        <span className="font-bold">{c.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             )}
 
             {category && !company && (
-              <div className="space-y-2">
+              <div>
                 <button
                   type="button"
                   onClick={() => setCategoryId(null)}
@@ -79,20 +101,23 @@ export function ServiceProviderPicker({ categories }: { categories: Category[] }
                 >
                   ← חזרה לתחומים
                 </button>
-                <p className="text-sm text-slate-400">{category.name} — בחר ספק:</p>
+                <p className="mb-3 text-sm text-slate-400">{category.name} — בחר ספק:</p>
                 {category.companies.length === 0 ? (
                   <p className="text-sm text-slate-500">אין ספקים בתחום זה</p>
                 ) : (
-                  category.companies.map((co) => (
-                    <button
-                      key={co.id}
-                      type="button"
-                      onClick={() => setCompanyId(co.id)}
-                      className="block w-full rounded-lg bg-slate-800 px-4 py-2 text-right hover:bg-slate-700"
-                    >
-                      {co.name}
-                    </button>
-                  ))
+                  <div className="grid grid-cols-2 gap-3">
+                    {category.companies.map((co) => (
+                      <button
+                        key={co.id}
+                        type="button"
+                        onClick={() => setCompanyId(co.id)}
+                        className={cardClass}
+                      >
+                        <span className="text-3xl">🏢</span>
+                        <span className="font-bold">{co.name}</span>
+                      </button>
+                    ))}
+                  </div>
                 )}
               </div>
             )}
