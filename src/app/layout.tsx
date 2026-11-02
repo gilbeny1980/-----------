@@ -32,7 +32,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="he" dir="rtl" className={`${heebo.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col bg-slate-50 text-slate-900 font-sans">
-        <header className="relative bg-slate-900 text-white shadow">
+        <header className="relative bg-slate-900 text-white shadow [color-scheme:dark]">
           <div className="mx-auto max-w-5xl px-4 py-4 flex flex-wrap items-center justify-center gap-3">
             <Link href="/" className="ml-10 flex items-center gap-2">
               <span className="text-xl">⚡</span>

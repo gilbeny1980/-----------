@@ -74,7 +74,7 @@ export default async function DisplayPage() {
     .slice(0, 15);
 
   return (
-    <div className="flex-1 flex flex-col bg-slate-950 text-white">
+    <div className="flex-1 flex flex-col bg-slate-950 text-white [color-scheme:dark]">
       <meta httpEquiv="refresh" content="60" />
 
       <div className="relative flex flex-col gap-4 border-b border-slate-800 px-6 py-5 sm:flex-row sm:flex-wrap sm:items-center sm:pl-32">
