@@ -42,10 +42,21 @@ export function ServiceProviderPicker({ categories }: { categories: Category[] }
 
   return (
     <>
-      <button type="button" onClick={() => setIsOpen(true)} className={HEADER_CARD_CLASS}>
+      <div
+        role="button"
+        tabIndex={0}
+        onClick={() => setIsOpen(true)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            setIsOpen(true);
+          }
+        }}
+        className={`${HEADER_CARD_CLASS} cursor-pointer`}
+      >
         <span className="text-lg">🛠️</span>
         <span className="font-bold">נותני שירות</span>
-      </button>
+      </div>
 
       {isOpen && (
         <div
