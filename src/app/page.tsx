@@ -82,7 +82,7 @@ export default async function DisplayPage() {
         <div className="sm:shrink-0">
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
-          <div className="mt-2 grid grid-cols-2 gap-3">
+          <div className="mt-2 grid grid-cols-2 gap-3 sm:flex sm:flex-nowrap">
             <a
               href="https://t.me/Galam_Electrical_Bot"
               target="_blank"
@@ -100,7 +100,7 @@ export default async function DisplayPage() {
             </a>
             <Link href="/room-entry" className={HEADER_CARD_CLASS}>
               <span className="text-xl">🚪</span>
-              <span className="font-bold">כניסה לחדר חשמל</span>
+              <span className="font-bold">חדרי חשמל</span>
             </Link>
             <Link href="/transformers-status" className={HEADER_CARD_CLASS}>
               <span className="text-xl">⚡</span>
