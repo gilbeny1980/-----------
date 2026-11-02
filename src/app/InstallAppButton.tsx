@@ -21,9 +21,6 @@ function isIos(): boolean {
   return /iphone|ipad|ipod/i.test(navigator.userAgent);
 }
 
-const buttonClass =
-  "rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]";
-
 export function InstallAppButton() {
   const [deferredPrompt, setDeferredPrompt] =
     useState<BeforeInstallPromptEvent | null>(null);
@@ -62,8 +59,26 @@ export function InstallAppButton() {
 
   return (
     <>
-      <button type="button" onClick={handleClick} className={buttonClass}>
-        התקן אפליקציה
+      <button
+        type="button"
+        onClick={handleClick}
+        title="התקן אפליקציה"
+        aria-label="התקן אפליקציה"
+        className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/15 text-white transition-colors hover:bg-white/25"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-5 w-5"
+        >
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+          <polyline points="7 10 12 15 17 10" />
+          <line x1="12" y1="15" x2="12" y2="3" />
+        </svg>
       </button>
 
       {showIosHelp && (
