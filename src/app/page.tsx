@@ -10,6 +10,7 @@ import { WorkerAssignmentsSection } from "./WorkerAssignmentsSection";
 import { UpdatesTicker } from "./UpdatesTicker";
 import { WorkOrdersPanel } from "./WorkOrdersPanel";
 import { getWorkOrdersTitle } from "@/lib/settings";
+import { HEADER_CARD_CLASS } from "@/lib/uiStyles";
 
 export const dynamic = "force-dynamic";
 
@@ -81,35 +82,33 @@ export default async function DisplayPage() {
         <div className="sm:shrink-0">
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
-          <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-2 flex flex-wrap gap-3">
             <a
               href="https://t.me/Galam_Electrical_Bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
+              className={HEADER_CARD_CLASS}
             >
-              מדריך תפעול בטלגרם
+              <span className="text-3xl">✈️</span>
+              <span className="font-bold">מדריך תפעול בטלגרם</span>
             </a>
-            <Link
-              href="/room-entry"
-              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
-            >
-              כניסה לחדר חשמל
+            <Link href="/room-entry" className={HEADER_CARD_CLASS}>
+              <span className="text-3xl">🚪</span>
+              <span className="font-bold">כניסה לחדר חשמל</span>
             </Link>
-            <Link
-              href="/transformers-status"
-              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
-            >
-              צריכת שנאים
+            <Link href="/transformers-status" className={HEADER_CARD_CLASS}>
+              <span className="text-3xl">⚡</span>
+              <span className="font-bold">צריכת שנאים</span>
             </Link>
             <ServiceProviderPicker categories={serviceCategories} />
             <a
               href="https://project-4lc5n.vercel.app/"
               target="_blank"
               rel="noopener noreferrer"
-              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
+              className={HEADER_CARD_CLASS}
             >
-              משימות עובדים
+              <span className="text-3xl">👷</span>
+              <span className="font-bold">משימות עובדים</span>
             </a>
           </div>
         </div>

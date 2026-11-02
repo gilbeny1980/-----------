@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { HEADER_CARD_CLASS } from "@/lib/uiStyles";
 
 type Contact = { id: string; name: string; role: string | null; phone: string | null };
 type Company = { id: string; name: string; contacts: Contact[] };
@@ -41,12 +42,9 @@ export function ServiceProviderPicker({ categories }: { categories: Category[] }
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setIsOpen(true)}
-        className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
-      >
-        נותני שירות
+      <button type="button" onClick={() => setIsOpen(true)} className={HEADER_CARD_CLASS}>
+        <span className="text-3xl">🛠️</span>
+        <span className="font-bold">נותני שירות</span>
       </button>
 
       {isOpen && (
