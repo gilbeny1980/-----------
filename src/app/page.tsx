@@ -115,6 +115,15 @@ export default async function DisplayPage() {
               <span className="text-lg">👷</span>
               <span className="font-bold">משימות עובדים</span>
             </a>
+            <a
+              href="https://galam-mesek.vercel.app/call.html"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={HEADER_CARD_CLASS}
+            >
+              <span className="text-lg">📞</span>
+              <span className="font-bold">קריאה למשק</span>
+            </a>
           </div>
         </div>
         <UpdatesTicker items={feedItems} />
