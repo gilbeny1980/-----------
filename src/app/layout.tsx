@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Heebo } from "next/font/google";
 import Link from "next/link";
 import { isAdmin } from "@/lib/role";
+import { ClientClock } from "@/app/ClientClock";
 import { InstallAppButton } from "@/app/InstallAppButton";
 import { NavMenu } from "@/app/NavMenu";
 import "./globals.css";
@@ -39,10 +40,11 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </Link>
           </div>
           <div className="absolute inset-y-0 left-0 flex items-center pl-3">
-            <NavMenu admin={admin} />
+            <ClientClock />
           </div>
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+          <div className="absolute inset-y-0 right-0 flex items-center gap-2 pr-3">
             <InstallAppButton />
+            <NavMenu admin={admin} />
           </div>
         </header>
         <main className="flex-1 w-full flex flex-col">{children}</main>

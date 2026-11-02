@@ -4,7 +4,6 @@ import {
   PROJECT_STATUS_BADGE_CLASSES,
   PROJECT_STATUS_LABELS,
 } from "@/lib/labels";
-import { ClientClock } from "./ClientClock";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
 import { WorkerAssignmentsSection } from "./WorkerAssignmentsSection";
 import { UpdatesTicker } from "./UpdatesTicker";
@@ -119,9 +118,6 @@ export default async function DisplayPage() {
           </div>
         </div>
         <UpdatesTicker items={feedItems} />
-        <div className="sm:absolute sm:left-6 sm:top-5">
-          <ClientClock />
-        </div>
       </div>
 
       <WorkerAssignmentsSection />
