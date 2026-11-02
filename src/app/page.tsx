@@ -5,8 +5,8 @@ import {
   PROJECT_STATUS_LABELS,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
-import { OpenFaultsSection } from "./OpenFaultsSection";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
+import { WorkerAssignmentsSection } from "./WorkerAssignmentsSection";
 import { UpdatesTicker } from "./UpdatesTicker";
 import { WorkOrdersPanel } from "./WorkOrdersPanel";
 import { getWorkOrdersTitle } from "@/lib/settings";
@@ -103,6 +103,14 @@ export default async function DisplayPage() {
               צריכת שנאים
             </Link>
             <ServiceProviderPicker categories={serviceCategories} />
+            <a
+              href="https://project-4lc5n.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-md border-2 border-neutral-500 bg-neutral-600 px-6 py-3 text-base font-bold text-neutral-50 shadow-[inset_0_1px_0_rgba(255,255,255,0.2),inset_0_-2px_0_rgba(0,0,0,0.35)] transition-colors hover:bg-neutral-500 active:shadow-[inset_0_1px_2px_rgba(0,0,0,0.4)]"
+            >
+              משימות עובדים
+            </a>
           </div>
         </div>
         <UpdatesTicker items={feedItems} />
@@ -111,7 +119,7 @@ export default async function DisplayPage() {
         </div>
       </div>
 
-      <OpenFaultsSection />
+      <WorkerAssignmentsSection />
 
       {birthdayElectricians.length > 0 && (
         <div className="mx-4 mt-4 rounded-xl border border-pink-800 bg-pink-950/40 px-4 py-3 text-center">
