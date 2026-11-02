@@ -5,6 +5,7 @@ import {
   PROJECT_STATUS_LABELS,
 } from "@/lib/labels";
 import { ClientClock } from "./ClientClock";
+import { InstallAppButton } from "./InstallAppButton";
 import { ServiceProviderPicker } from "./ServiceProviderPicker";
 import { WorkerAssignmentsSection } from "./WorkerAssignmentsSection";
 import { UpdatesTicker } from "./UpdatesTicker";
@@ -111,6 +112,7 @@ export default async function DisplayPage() {
             >
               משימות עובדים
             </a>
+            <InstallAppButton />
           </div>
         </div>
         <UpdatesTicker items={feedItems} />
