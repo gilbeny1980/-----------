@@ -89,7 +89,7 @@ export default async function DisplayPage() {
               rel="noopener noreferrer"
               className={HEADER_CARD_CLASS}
             >
-              <svg viewBox="0 0 240 240" className="h-6 w-6 shrink-0" aria-hidden="true">
+              <svg viewBox="0 0 240 240" className="h-5 w-5 shrink-0" aria-hidden="true">
                 <circle cx="120" cy="120" r="120" fill="#29A9EB" />
                 <path
                   fill="#fff"
@@ -99,11 +99,11 @@ export default async function DisplayPage() {
               <span className="font-bold">בוט טלגרם</span>
             </a>
             <Link href="/room-entry" className={HEADER_CARD_CLASS}>
-              <span className="text-xl">🚪</span>
+              <span className="text-lg">🚪</span>
               <span className="font-bold">חדרי חשמל</span>
             </Link>
             <Link href="/transformers-status" className={HEADER_CARD_CLASS}>
-              <span className="text-xl">⚡</span>
+              <span className="text-lg">⚡</span>
               <span className="font-bold">צריכת שנאים</span>
             </Link>
             <ServiceProviderPicker categories={serviceCategories} />
@@ -113,7 +113,7 @@ export default async function DisplayPage() {
               rel="noopener noreferrer"
               className={HEADER_CARD_CLASS}
             >
-              <span className="text-xl">👷</span>
+              <span className="text-lg">👷</span>
               <span className="font-bold">משימות עובדים</span>
             </a>
           </div>

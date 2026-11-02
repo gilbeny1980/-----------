@@ -43,7 +43,7 @@ export function ServiceProviderPicker({ categories }: { categories: Category[] }
   return (
     <>
       <button type="button" onClick={() => setIsOpen(true)} className={HEADER_CARD_CLASS}>
-        <span className="text-xl">🛠️</span>
+        <span className="text-lg">🛠️</span>
         <span className="font-bold">נותני שירות</span>
       </button>
 
