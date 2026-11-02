@@ -89,22 +89,22 @@ export default async function DisplayPage() {
               rel="noopener noreferrer"
               className={HEADER_CARD_CLASS}
             >
-              <svg viewBox="0 0 240 240" className="h-12 w-12" aria-hidden="true">
+              <svg viewBox="0 0 240 240" className="h-8 w-8" aria-hidden="true">
                 <circle cx="120" cy="120" r="120" fill="#29A9EB" />
                 <path
                   fill="#fff"
                   d="M179.6 72.9 154.7 187c-1.9 8.4-6.8 10.5-13.8 6.5l-38-28-18.3 17.6c-2 2-3.7 3.7-7.6 3.7l2.7-38.5L170 65.5c4-3.6-.9-5.6-6.2-2L63.6 125l-37.6-11.8c-8.2-2.6-8.3-8.2 1.7-12.1l147-56.6c6.8-2.5 12.8 1.6 10.9 12.4Z"
                 />
               </svg>
-              <span className="text-lg font-bold">מדריך תפעול בטלגרם</span>
+              <span className="font-bold">מדריך תפעול בטלגרם</span>
             </a>
             <Link href="/room-entry" className={HEADER_CARD_CLASS}>
-              <span className="text-5xl">🚪</span>
-              <span className="text-lg font-bold">כניסה לחדר חשמל</span>
+              <span className="text-3xl">🚪</span>
+              <span className="font-bold">כניסה לחדר חשמל</span>
             </Link>
             <Link href="/transformers-status" className={HEADER_CARD_CLASS}>
-              <span className="text-5xl">⚡</span>
-              <span className="text-lg font-bold">צריכת שנאים</span>
+              <span className="text-3xl">⚡</span>
+              <span className="font-bold">צריכת שנאים</span>
             </Link>
             <ServiceProviderPicker categories={serviceCategories} />
             <a
@@ -113,8 +113,8 @@ export default async function DisplayPage() {
               rel="noopener noreferrer"
               className={HEADER_CARD_CLASS}
             >
-              <span className="text-5xl">👷</span>
-              <span className="text-lg font-bold">משימות עובדים</span>
+              <span className="text-3xl">👷</span>
+              <span className="font-bold">משימות עובדים</span>
             </a>
           </div>
         </div>
