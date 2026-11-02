@@ -24,10 +24,10 @@ export function ClientClock() {
 
   return (
     <div className="text-left" dir="ltr">
-      <div className="text-3xl font-bold tabular-nums">
+      <div className="text-base font-bold tabular-nums">
         {date.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" })}
       </div>
-      <div className="text-sm text-slate-400">
+      <div className="text-[10px] text-slate-400">
         {date.toLocaleDateString("he-IL", {
           weekday: "long",
           day: "2-digit",
