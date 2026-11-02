@@ -82,7 +82,7 @@ export default async function DisplayPage() {
         <div className="sm:shrink-0">
           <h1 className="text-2xl font-bold">לוח בקרה - מחלקת חשמל, גלעם</h1>
           <p className="text-sm text-slate-400">{projects.length} פרויקטים פעילים</p>
-          <div className="mt-2 flex flex-wrap gap-3">
+          <div className="mt-2 grid grid-cols-2 gap-3">
             <a
               href="https://t.me/Galam_Electrical_Bot"
               target="_blank"
@@ -96,7 +96,7 @@ export default async function DisplayPage() {
                   d="M179.6 72.9 154.7 187c-1.9 8.4-6.8 10.5-13.8 6.5l-38-28-18.3 17.6c-2 2-3.7 3.7-7.6 3.7l2.7-38.5L170 65.5c4-3.6-.9-5.6-6.2-2L63.6 125l-37.6-11.8c-8.2-2.6-8.3-8.2 1.7-12.1l147-56.6c6.8-2.5 12.8 1.6 10.9 12.4Z"
                 />
               </svg>
-              <span className="font-bold">מדריך תפעול בטלגרם</span>
+              <span className="font-bold">בוט טלגרם</span>
             </a>
             <Link href="/room-entry" className={HEADER_CARD_CLASS}>
               <span className="text-xl">🚪</span>
