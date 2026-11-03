@@ -46,8 +46,8 @@ export default async function ManageRoomEntriesPage({
     <div className="mx-auto max-w-2xl w-full space-y-6 px-4 py-6">
       <h1 className="text-xl font-bold">ניהול חדרי חשמל</h1>
       <p className="text-sm text-slate-500">
-        עריכה ותיקון של הכניסות שנרשמו בסריקת QR - טלפון, מצב החדר והמזגן,
-        והערות.
+        עריכה ותיקון של הכניסות שנרשמו בסריקת QR - שם עובד, מצב החדר, המזגן
+        והתאורה, והערות.
       </p>
 
       <div className="flex flex-wrap items-center gap-2 text-sm">
@@ -90,12 +90,11 @@ export default async function ManageRoomEntriesPage({
 
                 <label className="block">
                   <span className="mb-1 block text-xs font-medium text-slate-500">
-                    טלפון
+                    שם עובד
                   </span>
                   <input
-                    name="phone"
-                    dir="ltr"
-                    defaultValue={entry.phone}
+                    name="workerName"
+                    defaultValue={entry.workerName}
                     className="input w-full"
                   />
                 </label>
@@ -118,6 +117,15 @@ export default async function ManageRoomEntriesPage({
                       className="h-4 w-4"
                     />
                     המזגן עובד
+                  </label>
+                  <label className="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      name="lightingWorking"
+                      defaultChecked={entry.lightingWorking}
+                      className="h-4 w-4"
+                    />
+                    תאורה תקינה
                   </label>
                 </div>
 

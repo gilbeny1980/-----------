@@ -133,11 +133,10 @@ export function QrScanner() {
           קוד נסרק בהצלחה. יש למלא את הפרטים לאישור הכניסה.
         </p>
         <input
-          name="phone"
-          dir="ltr"
+          name="workerName"
           required
           autoFocus
-          placeholder="מספר טלפון"
+          placeholder="שם עובד"
           className="input w-full text-center text-lg"
         />
         <div className="space-y-2 rounded-lg border border-slate-700 bg-slate-900/60 p-3">
@@ -148,6 +147,10 @@ export function QrScanner() {
           <label className="flex items-center gap-2 text-sm">
             <input type="checkbox" name="acWorking" className="h-4 w-4" />
             המזגן עובד
+          </label>
+          <label className="flex items-center gap-2 text-sm">
+            <input type="checkbox" name="lightingWorking" className="h-4 w-4" />
+            תאורה תקינה
           </label>
           <textarea
             name="notes"

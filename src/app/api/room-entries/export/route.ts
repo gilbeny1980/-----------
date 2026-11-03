@@ -32,10 +32,11 @@ export async function GET(request: NextRequest) {
 
   const rows = entries.map((entry) => ({
     "חדר חשמל": entry.room.name,
-    "טלפון": entry.phone,
+    "שם עובד": entry.workerName,
     "תאריך ושעה": formatDateTime(entry.enteredAt),
     "חדר נקי": entry.roomClean ? "כן" : "לא",
     "מזגן תקין": entry.acWorking ? "כן" : "לא",
+    "תאורה תקינה": entry.lightingWorking ? "כן" : "לא",
     "הערות": entry.notes ?? "",
   }));
 

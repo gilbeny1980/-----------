@@ -60,9 +60,7 @@ export default async function RoomEntriesPage({
             <div key={entry.id} className="flex items-center justify-between p-4">
               <div>
                 <div className="font-medium">{entry.room.name}</div>
-                <div className="text-sm text-slate-500" dir="ltr">
-                  {entry.phone}
-                </div>
+                <div className="text-sm text-slate-500">{entry.workerName}</div>
               </div>
               <div className="text-xs text-slate-400">
                 {formatDateTime(entry.enteredAt)}

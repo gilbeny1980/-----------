@@ -99,8 +99,8 @@ export default async function RoomEntryPage({
                   >
                     <div>
                       <div className="font-medium">{entry.room.name}</div>
-                      <div className="text-sm text-slate-500" dir="ltr">
-                        {entry.phone}
+                      <div className="text-sm text-slate-500">
+                        {entry.workerName}
                       </div>
                       <div className="mt-1 flex flex-wrap gap-3 text-xs">
                         <span
@@ -116,6 +116,17 @@ export default async function RoomEntryPage({
                           }
                         >
                           {entry.acWorking ? "✓ מזגן תקין" : "✗ מזגן לא תקין"}
+                        </span>
+                        <span
+                          className={
+                            entry.lightingWorking
+                              ? "text-emerald-600"
+                              : "text-red-500"
+                          }
+                        >
+                          {entry.lightingWorking
+                            ? "✓ תאורה תקינה"
+                            : "✗ תאורה לא תקינה"}
                         </span>
                       </div>
                       {entry.notes && (

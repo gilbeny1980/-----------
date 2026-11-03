@@ -531,13 +531,13 @@ export async function logRoomEntry(
   formData: FormData,
 ): Promise<RoomEntryState> {
   const qrCode = (formData.get("qrCode") ?? "").toString().trim();
-  const phone = (formData.get("phone") ?? "").toString().trim();
+  const workerName = (formData.get("workerName") ?? "").toString().trim();
 
   if (!qrCode) {
     return { error: "קוד QR לא תקין" };
   }
-  if (!phone) {
-    return { error: "יש להזין מספר טלפון" };
+  if (!workerName) {
+    return { error: "יש להזין שם עובד" };
   }
 
   const room = await prisma.electricalRoom.findUnique({ where: { qrCode } });
@@ -547,10 +547,18 @@ export async function logRoomEntry(
 
   const roomClean = formData.get("roomClean") === "on";
   const acWorking = formData.get("acWorking") === "on";
+  const lightingWorking = formData.get("lightingWorking") === "on";
   const notes = (formData.get("notes") ?? "").toString().trim() || null;
 
   await prisma.roomEntry.create({
-    data: { roomId: room.id, phone, roomClean, acWorking, notes },
+    data: {
+      roomId: room.id,
+      workerName,
+      roomClean,
+      acWorking,
+      lightingWorking,
+      notes,
+    },
   });
 
   return { success: `נרשמה כניסה ל${room.name}` };
@@ -559,14 +567,15 @@ export async function logRoomEntry(
 export async function updateRoomEntry(entryId: string, formData: FormData) {
   await assertAdmin();
 
-  const phone = (formData.get("phone") ?? "").toString().trim();
+  const workerName = (formData.get("workerName") ?? "").toString().trim();
   const roomClean = formData.get("roomClean") === "on";
   const acWorking = formData.get("acWorking") === "on";
+  const lightingWorking = formData.get("lightingWorking") === "on";
   const notes = (formData.get("notes") ?? "").toString().trim() || null;
 
   await prisma.roomEntry.update({
     where: { id: entryId },
-    data: { phone, roomClean, acWorking, notes },
+    data: { workerName, roomClean, acWorking, lightingWorking, notes },
   });
 
   revalidatePath("/room-entries/manage");
