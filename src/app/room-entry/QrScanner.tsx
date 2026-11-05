@@ -2,7 +2,11 @@
 
 import { useActionState, useEffect, useState } from "react";
 import { Html5Qrcode, Html5QrcodeScannerState } from "html5-qrcode";
-import { logRoomEntry, type RoomEntryState } from "@/app/actions";
+import {
+  getRoomNameByQrCode,
+  logRoomEntry,
+  type RoomEntryState,
+} from "@/app/actions";
 
 const SCANNER_ELEMENT_ID = "qr-scanner-region";
 const initialState: RoomEntryState = {};
@@ -11,10 +15,33 @@ export function QrScanner() {
   const [phase, setPhase] = useState<"idle" | "scanning" | "scanned">("idle");
   const [scannedCode, setScannedCode] = useState<string | null>(null);
   const [scanError, setScanError] = useState<string | null>(null);
+  const [roomName, setRoomName] = useState<string | null>(null);
+  const [roomLookupError, setRoomLookupError] = useState<string | null>(null);
   const [state, formAction, isPending] = useActionState(
     logRoomEntry,
     initialState,
   );
+
+  useEffect(() => {
+    if (phase !== "scanned" || !scannedCode) return;
+
+    let cancelled = false;
+    setRoomName(null);
+    setRoomLookupError(null);
+
+    getRoomNameByQrCode(scannedCode).then((result) => {
+      if (cancelled) return;
+      if ("error" in result) {
+        setRoomLookupError(result.error);
+      } else {
+        setRoomName(result.name);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [phase, scannedCode]);
 
   useEffect(() => {
     if (phase !== "scanning") return;
@@ -125,12 +152,39 @@ export function QrScanner() {
     );
   }
 
+  if (phase === "scanned" && scannedCode && roomLookupError) {
+    return (
+      <div className="rounded-xl border border-red-800 bg-red-950/40 p-6 text-center">
+        <p className="font-bold text-red-300">{roomLookupError}</p>
+        <button
+          type="button"
+          onClick={() => {
+            setScannedCode(null);
+            setPhase("idle");
+          }}
+          className="mt-4 rounded-md bg-slate-800 px-4 py-2 text-sm font-medium text-white hover:bg-slate-700"
+        >
+          סריקה מחדש
+        </button>
+      </div>
+    );
+  }
+
   if (phase === "scanned" && scannedCode) {
     return (
       <form action={formAction} className="space-y-4">
         <input type="hidden" name="qrCode" value={scannedCode} />
+        {roomName ? (
+          <p className="text-center text-lg font-bold text-emerald-300">
+            {roomName}
+          </p>
+        ) : (
+          <p className="text-center text-sm text-slate-400">
+            בודק את החדר שנסרק...
+          </p>
+        )}
         <p className="text-center text-sm text-slate-400">
-          קוד נסרק בהצלחה. יש למלא את הפרטים לאישור הכניסה.
+          יש למלא את הפרטים לאישור הכניסה.
         </p>
         <input
           name="workerName"

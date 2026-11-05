@@ -524,6 +524,25 @@ export async function deleteServiceContact(contactId: string) {
   revalidateProviderPaths();
 }
 
+export async function getRoomNameByQrCode(
+  qrCode: string,
+): Promise<{ name: string } | { error: string }> {
+  const trimmed = qrCode.trim();
+  if (!trimmed) {
+    return { error: "קוד QR לא תקין" };
+  }
+
+  const room = await prisma.electricalRoom.findUnique({
+    where: { qrCode: trimmed },
+  });
+
+  if (!room) {
+    return { error: "חדר חשמל לא נמצא במערכת" };
+  }
+
+  return { name: room.name };
+}
+
 export type RoomEntryState = { error?: string; success?: string };
 
 export async function logRoomEntry(
