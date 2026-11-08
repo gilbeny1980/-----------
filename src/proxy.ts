@@ -7,6 +7,8 @@ const PUBLIC_PATHS = new Set([
   "/room-entry",
   "/transformers-status",
   "/api/open-faults/sync",
+  "/api/telegram/customer",
+  "/api/telegram/admin",
   "/manifest.webmanifest",
   "/icon.png",
   "/apple-icon.png",
